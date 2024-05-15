@@ -1,4 +1,4 @@
-import { Observable, map, startWith } from "rxjs";
+import { Observable, catchError, map, of, startWith } from "rxjs";
 import { TodoItem } from "../infra/todo-item.model";
 import { TodoListGateway } from "../infra/todo-list.gateway";
 import { TodoListBuilder } from "./todo-list.builder";
@@ -13,7 +13,8 @@ export class GetTodoListUsecase {
                     .getAll()
                     .pipe(
                         map(todos => this.mapToVM(todos)),
-                        startWith(this.buildLoading())
+                        startWith(this.buildLoading()),
+                        catchError(() => of(this.buildError()))
                     );
     }
 
@@ -23,6 +24,10 @@ export class GetTodoListUsecase {
         } else {
             return this.buildWithTasks(todos);
         }
+    }
+
+    private buildError(): TodoListVM {
+        return new TodoListBuilder().withType(TodoListViewModelType.Error).withMessage("Une erreur est survenue").build();
     }
 
     private buildLoading(): TodoListVM {

@@ -1,9 +1,10 @@
 import { TestScheduler } from 'rxjs/testing';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { InMemoryTodoListService } from "../infra/in-memory-todo-list.service";
 import { TodoItem } from "../infra/todo-item.model";
 import { GetTodoListUsecase } from "./get-todo-list.usecase";
 import { TodoListVM, TodoListViewModelType } from "./todo-list.vm";
+import { TodoListGateway } from '../infra/todo-list.gateway';
 
 describe("Feature : Display todo list", () => {
 
@@ -51,6 +52,18 @@ describe("Feature : Display todo list", () => {
         thenExpectValue(res$, expectTodoWithTwoItems());
     });
 
+    it("Example : Error while loading todos", () => {
+        // GIVEN
+        const todoListGateway = new ErrorTodoListGateway();
+        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway);
+
+        // WHEN
+        const res$ = getTodoListUsecase.run();
+
+        // THEN
+        thenExpectValue(res$, expectError());
+    });
+
     function thenExpectValue(res$: Observable<TodoListVM>, value: TodoListVM) {
         const expectedMarbles = '(a-b|)';
         const expectedValues = {
@@ -79,6 +92,17 @@ describe("Feature : Display todo list", () => {
                         {id: 2, title: "My item 2", checked: false}
                     ];
         return { type: TodoListViewModelType.Todos, items: items };
+    }
+
+    function expectError(): TodoListVM {
+        return { type: TodoListViewModelType.Error, message: "Une erreur est survenue" };
+    }
+
+    class ErrorTodoListGateway implements TodoListGateway {
+        
+        getAll(): Observable<TodoItem[]> {
+            return throwError(() => new Error('Error'));
+        }
     }
 });
 
