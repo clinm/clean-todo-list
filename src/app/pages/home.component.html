@@ -1,5 +1,15 @@
-<p>
-    <mat-toolbar>
-      <span>Clean Todo App</span>
-    </mat-toolbar>
-</p>
+<mat-toolbar>
+  <span>Clean Todo App</span>
+</mat-toolbar>
+
+<div class="container">
+  <ng-container *ngIf="todos$ | async; let todos">
+    <div [ngSwitch]="todos.type">
+      <div *ngSwitchCase="TodoListViewModelType.NoTodo">
+        <mat-card>
+          <mat-card-content>{{ todos.message }}</mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </ng-container>
+</div>
