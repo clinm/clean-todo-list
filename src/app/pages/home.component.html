@@ -4,12 +4,25 @@
 
 <div class="container">
   <ng-container *ngIf="todos$ | async; let todos">
-    <div [ngSwitch]="todos.type">
-      <div *ngSwitchCase="TodoListViewModelType.NoTodo">
-        <mat-card>
-          <mat-card-content>{{ todos.message }}</mat-card-content>
-        </mat-card>
-      </div>
-    </div>
+    <mat-card>
+      <mat-card-content>
+        @switch (todos.type) {
+          @case (TodoListViewModelType.NoTodo) {
+            {{ todos.message }}
+          }
+          @case (TodoListViewModelType.Todos) {
+            <mat-list>
+              @for (item of todos.items; track item.id) {
+                <mat-list-item>
+                  <mat-checkbox [checked]="item.checked">
+                    {{ item.title }}
+                  </mat-checkbox>
+                </mat-list-item>
+              }
+            </mat-list>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
   </ng-container>
 </div>

@@ -5,11 +5,13 @@ import { Observable } from 'rxjs';
 import { GetTodoListUsecase } from '../usecases/get-todo-list.usecase';
 import { TodoListVM, TodoListViewModelType } from '../usecases/todo-list.vm';
 import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatListModule} from '@angular/material/list';
 
 @Component({
   selector: 'home-root',
   standalone: true,
-  imports: [MatToolbarModule, CommonModule, MatCardModule],
+  imports: [MatToolbarModule, CommonModule, MatCardModule, MatCheckboxModule, MatListModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

@@ -14,7 +14,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: TodoListGateway,
       useFactory: () => {
-        return new InMemoryTodoListService([], 3000);
+        const items = [{ id: 1, title: "Ma tâche", checked: false }, 
+                       { id: 2, title: "Ma tâche complétée", checked: true}
+                      ];
+
+        return new InMemoryTodoListService(items, 3000);
       }
     }, {
       provide: GetTodoListUsecase,
