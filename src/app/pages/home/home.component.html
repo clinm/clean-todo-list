@@ -11,15 +11,7 @@
             {{ todos.message }}
           }
           @case (TodoListViewModelType.Todos) {
-            <mat-list>
-              @for (item of todos.items; track item.id) {
-                <mat-list-item>
-                  <mat-checkbox [checked]="item.checked">
-                    {{ item.title }}
-                  </mat-checkbox>
-                </mat-list-item>
-              }
-            </mat-list>
+            <app-display-list-todo [items]="todos.items"></app-display-list-todo>
           }
         }
       </mat-card-content>

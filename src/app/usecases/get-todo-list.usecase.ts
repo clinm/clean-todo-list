@@ -1,4 +1,4 @@
-import { Observable, map, of } from "rxjs";
+import { Observable, map } from "rxjs";
 import { TodoListBuilder } from "./todo-list.builder";
 import { ItemVM, TodoListVM, TodoListViewModelType } from "./todo-list.vm";
 import { TodoListGateway } from "../infra/todo-list.gateway";
