@@ -8,21 +8,21 @@ export class GetTodoListUsecase {
 
     constructor(private todoListGateway: TodoListGateway){ }
 
-    public run(): Observable<TodoListVM> {
+    public run({ remaining = true }: { remaining?: boolean} = {}): Observable<TodoListVM> {
         return this.todoListGateway
                     .getAll()
                     .pipe(
-                        map(todos => this.mapToVM(todos)),
+                        map(todos => this.mapToVM(todos, remaining)),
                         startWith(this.buildLoading()),
                         catchError(() => of(this.buildError()))
                     );
     }
 
-    private mapToVM(todos: TodoItem[]): TodoListVM {
+    private mapToVM(todos: TodoItem[], remaining: boolean): TodoListVM {
         if (todos.length === 0) {
             return this.buildNoTask();
         } else {
-            return this.buildWithTasks(todos);
+            return this.buildWithTasks(todos, remaining);
         }
     }
 
@@ -38,8 +38,8 @@ export class GetTodoListUsecase {
         return new TodoListBuilder().withType(TodoListViewModelType.NoTodo).withMessage("Aucune tâche à effectuer").build();
     }
 
-    private buildWithTasks(todos: TodoItem[]): TodoListVM {
-        const items: ItemVM[] = todos.filter(t => !t.checked)
+    private buildWithTasks(todos: TodoItem[], remaining: boolean): TodoListVM {
+        const items: ItemVM[] = todos.filter(t => !remaining || !t.checked)
                                     .map(t => ({id: t.id, title: t.title, checked: t.checked}));
 
         return new TodoListBuilder()

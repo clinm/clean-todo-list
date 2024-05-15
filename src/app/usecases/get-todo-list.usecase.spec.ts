@@ -52,6 +52,18 @@ describe("Feature : Display todo list", () => {
         thenExpectValue(res$, expectTodoWithTwoItems());
     });
 
+    it("Example : Todo with 'completed' items", () => {
+        // GIVEN
+        const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
+        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway);
+
+        // WHEN
+        const res$ = getTodoListUsecase.run({ remaining: false });
+
+        // THEN
+        thenExpectValue(res$, expectTodoWithThreeItems());
+    });
+
     it("Example : Error while loading todos", () => {
         // GIVEN
         const todoListGateway = new ErrorTodoListGateway();
@@ -90,6 +102,14 @@ describe("Feature : Display todo list", () => {
     function expectTodoWithTwoItems(): TodoListVM {
         const items = [ {id: 1, title: "My item 1", checked: false}, 
                         {id: 2, title: "My item 2", checked: false}
+                    ];
+        return { type: TodoListViewModelType.Todos, items: items };
+    }
+
+    function expectTodoWithThreeItems(): TodoListVM {
+        const items = [ {id: 1, title: "My item 1", checked: false}, 
+                        {id: 2, title: "My item 2", checked: false},
+                        {id: 3, title: "My item 3", checked: true}
                     ];
         return { type: TodoListViewModelType.Todos, items: items };
     }
