@@ -35,6 +35,21 @@ describe("Feature : Display todo list", () => {
         })
     });
 
+    it("Example : Todo with only 'todo' items", (done) => {
+        // GIVEN
+        const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
+        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway);
+
+        // WHEN
+        const res$ = getTodoListUsecase.run();
+
+        // THEN
+        res$.subscribe(list => {
+            expect(list).toEqual(expectTodoWithTwoItems());
+            done();
+        })
+    });
+
     function oneTodo(id: number, checked: boolean = false): TodoItem {
         return {id: id, title: "My item " + id, checked: checked};
     }

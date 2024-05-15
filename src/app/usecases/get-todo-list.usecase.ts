@@ -27,7 +27,8 @@ export class GetTodoListUsecase {
     }
 
     private buildWithTasks(todos: TodoItem[]): TodoListVM {
-        const items: ItemVM[] = todos.map(t => ({id: t.id, title: t.title, checked: t.checked}));
+        const items: ItemVM[] = todos.filter(t => !t.checked)
+                                    .map(t => ({id: t.id, title: t.title, checked: t.checked}));
 
         return new TodoListBuilder()
                         .withType(TodoListViewModelType.Todos)
