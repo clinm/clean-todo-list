@@ -27,8 +27,9 @@ export class TodoListBuilder {
         let res: TodoListVM;
 
         switch(this.type) {
-            case TodoListViewModelType.NoTodo: 
-                res = { type: TodoListViewModelType.NoTodo, message: this.message}
+            case TodoListViewModelType.NoTodo:
+            case TodoListViewModelType.Loading: 
+                res = { type: this.type, message: this.message}
                 break;
             case TodoListViewModelType.Todos:
                 res = { type: TodoListViewModelType.Todos, items: this.items};

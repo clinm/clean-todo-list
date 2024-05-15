@@ -1,8 +1,8 @@
-import { Observable, map } from "rxjs";
+import { Observable, map, startWith } from "rxjs";
+import { TodoItem } from "../infra/todo-item.model";
+import { TodoListGateway } from "../infra/todo-list.gateway";
 import { TodoListBuilder } from "./todo-list.builder";
 import { ItemVM, TodoListVM, TodoListViewModelType } from "./todo-list.vm";
-import { TodoListGateway } from "../infra/todo-list.gateway";
-import { TodoItem } from "../infra/todo-item.model";
 
 export class GetTodoListUsecase {
 
@@ -11,7 +11,10 @@ export class GetTodoListUsecase {
     public run(): Observable<TodoListVM> {
         return this.todoListGateway
                     .getAll()
-                    .pipe(map(todos => this.mapToVM(todos)));
+                    .pipe(
+                        map(todos => this.mapToVM(todos)),
+                        startWith(this.buildLoading())
+                    );
     }
 
     private mapToVM(todos: TodoItem[]): TodoListVM {
@@ -20,6 +23,10 @@ export class GetTodoListUsecase {
         } else {
             return this.buildWithTasks(todos);
         }
+    }
+
+    private buildLoading(): TodoListVM {
+        return new TodoListBuilder().withType(TodoListViewModelType.Loading).withMessage("Chargement en cours ...").build();
     }
 
     private buildNoTask(): TodoListVM {
