@@ -1,11 +1,11 @@
 import { TestScheduler } from 'rxjs/testing';
 import { Observable, throwError } from 'rxjs';
-import { InMemoryTodoListService } from "../infra/in-memory-todo-list.service";
-import { TodoItem } from "../infra/todo-item.model";
+import { InMemoryTodoListService } from "../../infra/todo-list/in-memory-todo-list.service";
+import { TodoItem } from "../../infra/todo-list/todo-item.model";
 import { GetTodoListUsecase } from "./get-todo-list.usecase";
 import { TodoListVM, TodoListViewModelType } from "./todo-list.vm";
-import { TodoListGateway } from '../infra/todo-list.gateway';
-import { oneTodo } from '../infra/todo-list.fixture';
+import { TodoListGateway } from '../../infra/todo-list/todo-list.gateway';
+import { oneTodo } from '../../infra/todo-list/todo-list.fixture';
 
 describe("Feature : Display todo list", () => {
 

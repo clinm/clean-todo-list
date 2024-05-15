@@ -1,6 +1,6 @@
 import { Observable, catchError, map, of, startWith } from "rxjs";
-import { TodoItem } from "../infra/todo-item.model";
-import { TodoListGateway } from "../infra/todo-list.gateway";
+import { TodoItem } from "../../infra/todo-list/todo-item.model";
+import { TodoListGateway } from "../../infra/todo-list/todo-list.gateway";
 import { TodoListBuilder } from "./todo-list.builder";
 import { ItemVM, TodoListVM, TodoListViewModelType } from "./todo-list.vm";
 

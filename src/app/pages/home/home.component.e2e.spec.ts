@@ -2,9 +2,9 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { ComponentFixture, TestBed, fakeAsync, tick } from "@angular/core/testing";
 import { MatRadioButtonHarness } from '@angular/material/radio/testing';
-import { InMemoryTodoListService } from "../../infra/in-memory-todo-list.service";
-import { oneTodo } from "../../infra/todo-list.fixture";
-import { GetTodoListUsecase } from "../../usecases/get-todo-list.usecase";
+import { InMemoryTodoListService } from "../../infra/todo-list/in-memory-todo-list.service";
+import { oneTodo } from "../../infra/todo-list/todo-list.fixture";
+import { GetTodoListUsecase } from "../../usecases/get-todo-list/get-todo-list.usecase";
 import { HomeComponent } from "./home.component";
 
 describe("Home", () => {

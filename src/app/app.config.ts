@@ -1,11 +1,11 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { TodoListGateway } from "./infra/todo-list.gateway";
+import { TodoListGateway } from "./infra/todo-list/todo-list.gateway";
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { InMemoryTodoListService } from './infra/in-memory-todo-list.service';
-import { GetTodoListUsecase } from './usecases/get-todo-list.usecase';
+import { InMemoryTodoListService } from './infra/todo-list/in-memory-todo-list.service';
+import { GetTodoListUsecase } from './usecases/get-todo-list/get-todo-list.usecase';
 
 export const appConfig: ApplicationConfig = {
   providers: [

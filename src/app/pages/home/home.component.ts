@@ -5,8 +5,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Observable, map } from 'rxjs';
-import { GetTodoListUsecase } from '../../usecases/get-todo-list.usecase';
-import { TodoListVM, TodoListViewModelType } from '../../usecases/todo-list.vm';
+import { GetTodoListUsecase } from '../../usecases/get-todo-list/get-todo-list.usecase';
+import { TodoListVM, TodoListViewModelType } from '../../usecases/get-todo-list/todo-list.vm';
 import { DisplayListTodoComponent } from './components/display-list-todo/display-list-todo.component';
 
 @Component({
