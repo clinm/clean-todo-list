@@ -5,6 +5,7 @@ import { TodoItem } from "../infra/todo-item.model";
 import { GetTodoListUsecase } from "./get-todo-list.usecase";
 import { TodoListVM, TodoListViewModelType } from "./todo-list.vm";
 import { TodoListGateway } from '../infra/todo-list.gateway';
+import { oneTodo } from '../infra/todo-list.fixture';
 
 describe("Feature : Display todo list", () => {
 
@@ -85,10 +86,6 @@ describe("Feature : Display todo list", () => {
         testScheduler.run(( { expectObservable }) => {
             expectObservable(res$).toBe(expectedMarbles, expectedValues);
         });
-    }
-
-    function oneTodo(id: number, checked: boolean = false): TodoItem {
-        return {id: id, title: "My item " + id, checked: checked};
     }
 
     function expectLoading(): TodoListVM {

@@ -6,20 +6,28 @@
   <ng-container *ngIf="todos$ | async; let todos">
     <mat-card>
       <mat-card-content>
-        @switch (todos.type) {
-          @case (TodoListViewModelType.NoTodo) {
-            {{ todos.message }}
+        <div [formGroup]="filterForm">
+          <mat-radio-group aria-label="Select an option" formControlName="options">
+            <mat-radio-button value="false">Toutes les tâches</mat-radio-button>
+            <mat-radio-button value="true">A faire uniquement</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div>
+          @switch (todos.type) {
+            @case (TodoListViewModelType.NoTodo) {
+              {{ todos.message }}
+            }
+            @case (TodoListViewModelType.Loading) {
+              {{ todos.message }}
+            }
+            @case (TodoListViewModelType.Error) {
+              {{ todos.message }}
+            }                    
+            @case (TodoListViewModelType.Todos) {
+              <app-display-list-todo [items]="todos.items"></app-display-list-todo>
+            }
           }
-          @case (TodoListViewModelType.Loading) {
-            {{ todos.message }}
-          }
-          @case (TodoListViewModelType.Error) {
-            {{ todos.message }}
-          }                    
-          @case (TodoListViewModelType.Todos) {
-            <app-display-list-todo [items]="todos.items"></app-display-list-todo>
-          }
-        }
+        </div>
       </mat-card-content>
     </mat-card>
   </ng-container>

@@ -28,6 +28,8 @@
     "@angular-devkit/build-angular": "^17.3.4",
     "@angular/cli": "^17.3.4",
     "@angular/compiler-cli": "^17.3.0",
+    "@stryker-mutator/karma-runner": "^8.2.6",
+    "@stryker-mutator/typescript-checker": "^8.2.6",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
