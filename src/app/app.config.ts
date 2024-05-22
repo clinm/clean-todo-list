@@ -9,6 +9,7 @@ import { GetTodoListUsecase } from './usecases/get-todo-list/get-todo-list.useca
 import { TodoOptionsGateway } from './infra/todo-options/todo-options.gateway';
 import { ALL_ITEM_OPTIONS } from './infra/todo-options/todo-options.fixture';
 import { InMemoryTodoOptionsService } from './infra/todo-options/in-memory-todo-options.service';
+import { GetTodoOptionsUsecase } from './usecases/get-todo-options/get-todo-options.usecase';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -34,6 +35,12 @@ export const appConfig: ApplicationConfig = {
         return new GetTodoListUsecase(todoListGateway, todoOptionGateway);
       }, 
       deps: [TodoListGateway, TodoOptionsGateway]
+    }, {
+      provide: GetTodoOptionsUsecase,
+      useFactory: (todoOptionGateway: TodoOptionsGateway) => {
+        return new GetTodoOptionsUsecase(todoOptionGateway);
+      }, 
+      deps: [TodoOptionsGateway]
     }
   ]
 };

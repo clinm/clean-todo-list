@@ -6,6 +6,8 @@ import { GetTodoListUsecase } from "./get-todo-list.usecase";
 import { TodoListVM, TodoListViewModelType } from "./todo-list.vm";
 import { TodoListGateway } from '../../infra/todo-list/todo-list.gateway';
 import { oneTodo } from '../../infra/todo-list/todo-list.fixture';
+import { InMemoryTodoOptionsService } from '../../infra/todo-options/in-memory-todo-options.service';
+import { ALL_ITEM_OPTIONS, REMAINING_ITEM_OPTIONS } from '../../infra/todo-options/todo-options.fixture';
 
 describe("Feature : Display todo list", () => {
 
@@ -20,7 +22,8 @@ describe("Feature : Display todo list", () => {
     it("Example : No todos", () => {
         // GIVEN
         const todoListGateway = new InMemoryTodoListService([]);
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway);
+        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
         const res$ = getTodoListUsecase.run();
@@ -32,7 +35,8 @@ describe("Feature : Display todo list", () => {
     it("Example : Todo with two items", () => {
         // GIVEN
         const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2)]);
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway);
+        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
         const res$ = getTodoListUsecase.run();
@@ -44,7 +48,8 @@ describe("Feature : Display todo list", () => {
     it("Example : Todo with only 'todo' items", () => {
         // GIVEN
         const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway);
+        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
         const res$ = getTodoListUsecase.run();
@@ -56,10 +61,11 @@ describe("Feature : Display todo list", () => {
     it("Example : Todo with 'completed' items", () => {
         // GIVEN
         const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway);
+        const todoOptionGateway = new InMemoryTodoOptionsService(ALL_ITEM_OPTIONS);
+        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
-        const res$ = getTodoListUsecase.run({ remaining: false });
+        const res$ = getTodoListUsecase.run();
 
         // THEN
         thenExpectValue(res$, expectTodoWithThreeItems());
@@ -68,7 +74,8 @@ describe("Feature : Display todo list", () => {
     it("Example : Error while loading todos", () => {
         // GIVEN
         const todoListGateway = new ErrorTodoListGateway();
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway);
+        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
         const res$ = getTodoListUsecase.run();

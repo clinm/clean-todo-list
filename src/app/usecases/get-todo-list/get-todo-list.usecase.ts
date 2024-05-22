@@ -1,28 +1,30 @@
-import { Observable, catchError, map, of, startWith } from "rxjs";
+import { Observable, catchError, forkJoin, map, of, startWith } from "rxjs";
 import { TodoItem } from "../../infra/todo-list/todo-item.model";
 import { TodoListGateway } from "../../infra/todo-list/todo-list.gateway";
 import { TodoListBuilder } from "./todo-list.builder";
 import { ItemVM, TodoListVM, TodoListViewModelType } from "./todo-list.vm";
+import { TodoOptionsGateway } from "../../infra/todo-options/todo-options.gateway";
+import { TodoOptions } from "../../infra/todo-options/todo-options.model";
 
 export class GetTodoListUsecase {
 
-    constructor(private todoListGateway: TodoListGateway){ }
+    constructor(private todoListGateway: TodoListGateway,
+                private todoOptionsGateway: TodoOptionsGateway){ }
 
-    public run({ remaining = true }: { remaining?: boolean} = {}): Observable<TodoListVM> {
-        return this.todoListGateway
-                    .getAll()
+    public run(): Observable<TodoListVM> {
+        return forkJoin([this.todoListGateway.getAll(), this.todoOptionsGateway.get()])
                     .pipe(
-                        map(todos => this.mapToVM(todos, remaining)),
+                        map(([todos, options]) => this.mapToVM(todos, options)),
                         startWith(this.buildLoading()),
                         catchError(() => of(this.buildError()))
                     );
     }
 
-    private mapToVM(todos: TodoItem[], remaining: boolean): TodoListVM {
+    private mapToVM(todos: TodoItem[], options: TodoOptions): TodoListVM {
         if (todos.length === 0) {
             return this.buildNoTask();
         } else {
-            return this.buildWithTasks(todos, remaining);
+            return this.buildWithTasks(todos, options);
         }
     }
 
@@ -38,8 +40,8 @@ export class GetTodoListUsecase {
         return new TodoListBuilder().withType(TodoListViewModelType.NoTodo).withMessage("Aucune tâche à effectuer").build();
     }
 
-    private buildWithTasks(todos: TodoItem[], remaining: boolean): TodoListVM {
-        const items: ItemVM[] = todos.filter(t => !remaining || !t.checked)
+    private buildWithTasks(todos: TodoItem[], options: TodoOptions): TodoListVM {
+        const items: ItemVM[] = todos.filter(t => !options.remaining || !t.checked)
                                     .map(t => ({id: t.id, title: t.title, checked: t.checked}));
 
         return new TodoListBuilder()
