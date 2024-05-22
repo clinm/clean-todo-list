@@ -4,10 +4,11 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { GetTodoListUsecase } from '../../usecases/get-todo-list/get-todo-list.usecase';
 import { TodoListVM, TodoListViewModelType } from '../../usecases/get-todo-list/todo-list.vm';
 import { DisplayListTodoComponent } from './components/display-list-todo/display-list-todo.component';
+import { GetTodoOptionsUsecase } from '../../usecases/get-todo-options/get-todo-options.usecase';
 
 @Component({
   selector: 'home-root',
@@ -23,26 +24,23 @@ export class HomeComponent implements OnInit {
   TodoListViewModelType = TodoListViewModelType;
 
   filterForm: FormGroup = new FormGroup({
-    options: new FormControl()
+    remaining: new FormControl()
   });
   
-  constructor(private getTodoList: GetTodoListUsecase) {}
+  constructor(private getTodoList: GetTodoListUsecase,
+              private getTodoOptions: GetTodoOptionsUsecase) {}
 
   ngOnInit(): void {
     this.initFilterListener();
 
-    this.initForm();
+    this.todos$ = this.getTodoList.run();
   }
 
   private initFilterListener() {
-    this.filterForm.valueChanges
-      .pipe(map(res => ({ remaining: res.options === "true" })))
-      .subscribe(res => {
-        this.todos$ = this.getTodoList.run(res);
-      });
-  }
-
-  private initForm() {
-    this.filterForm.patchValue({options: "true"});
+    this.getTodoOptions
+          .run()
+          .subscribe(option => {
+            this.filterForm.patchValue(option);
+          });
   }
 }

@@ -7,9 +7,9 @@
     <mat-card>
       <mat-card-content>
         <div [formGroup]="filterForm">
-          <mat-radio-group aria-label="Select an option" formControlName="options">
-            <mat-radio-button value="false">Toutes les tâches</mat-radio-button>
-            <mat-radio-button value="true">A faire uniquement</mat-radio-button>
+          <mat-radio-group aria-label="Select an option" formControlName="remaining">
+            <mat-radio-button [value]="false">Toutes les tâches</mat-radio-button>
+            <mat-radio-button [value]="true">A faire uniquement</mat-radio-button>
           </mat-radio-group>
         </div>
         <div>
