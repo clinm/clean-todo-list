@@ -1,4 +1,4 @@
-import { Observable, delay, of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { TodoOptionsGateway } from "./todo-options.gateway";
 import { TodoOptions } from "./todo-options.model";
 
