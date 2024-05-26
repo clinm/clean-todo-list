@@ -9,6 +9,7 @@ import { REMAINING_ITEM_OPTIONS } from '../../infra/todo-options/todo-options.fi
 import { GetTodoListUsecase } from "../../usecases/get-todo-list/get-todo-list.usecase";
 import { GetTodoOptionsUsecase } from '../../usecases/get-todo-options/get-todo-options.usecase';
 import { HomeComponent } from "./home.component";
+import { UpdateTodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
 
 describe("Home", () => {
 
@@ -29,7 +30,7 @@ describe("Home", () => {
       expectItemsCount(2);
     }));
 
-    xit("Example : Display all items", fakeAsync(async() => {
+    it("Example : Display all items", fakeAsync(async() => {
       // GIVEN
       const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
       const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
@@ -48,7 +49,8 @@ describe("Home", () => {
         imports: [HomeComponent],
         providers: [
           { provide: GetTodoListUsecase, useValue: new GetTodoListUsecase(todoListGateway, optionGateway)},
-          { provide: GetTodoOptionsUsecase, useValue: new GetTodoOptionsUsecase(optionGateway)}
+          { provide: GetTodoOptionsUsecase, useValue: new GetTodoOptionsUsecase(optionGateway)},
+          { provide: UpdateTodoOptionsGateway, useValue: optionGateway}
         ]
       });
       fixture = TestBed.createComponent(HomeComponent);

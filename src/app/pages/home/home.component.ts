@@ -4,11 +4,12 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { Observable } from 'rxjs';
+import { Observable, distinct, distinctUntilChanged } from 'rxjs';
 import { GetTodoListUsecase } from '../../usecases/get-todo-list/get-todo-list.usecase';
 import { TodoListVM, TodoListViewModelType } from '../../usecases/get-todo-list/todo-list.vm';
 import { DisplayListTodoComponent } from './components/display-list-todo/display-list-todo.component';
 import { GetTodoOptionsUsecase } from '../../usecases/get-todo-options/get-todo-options.usecase';
+import { UpdateTodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
 
 @Component({
   selector: 'home-root',
@@ -28,7 +29,8 @@ export class HomeComponent implements OnInit {
   });
   
   constructor(private getTodoList: GetTodoListUsecase,
-              private getTodoOptions: GetTodoOptionsUsecase) {}
+              private getTodoOptions: GetTodoOptionsUsecase,
+              private updateTodoOptionsGateway: UpdateTodoOptionsGateway) {}
 
   ngOnInit(): void {
     this.initFilterListener();
@@ -40,7 +42,12 @@ export class HomeComponent implements OnInit {
     this.getTodoOptions
           .run()
           .subscribe(option => {
-            this.filterForm.patchValue(option);
+            this.filterForm.patchValue(option, { emitEvent: false});
           });
+
+    this.filterForm.valueChanges
+        .subscribe(form => {
+          this.updateTodoOptionsGateway.update(form);
+        });
   }
 }

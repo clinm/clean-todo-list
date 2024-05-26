@@ -6,7 +6,7 @@ import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { InMemoryTodoListService } from './infra/todo-list/in-memory-todo-list.service';
 import { GetTodoListUsecase } from './usecases/get-todo-list/get-todo-list.usecase';
-import { TodoOptionsGateway } from './infra/todo-options/todo-options.gateway';
+import { TodoOptionsGateway, UpdateTodoOptionsGateway } from './infra/todo-options/todo-options.gateway';
 import { ALL_ITEM_OPTIONS } from './infra/todo-options/todo-options.fixture';
 import { InMemoryTodoOptionsService } from './infra/todo-options/in-memory-todo-options.service';
 import { GetTodoOptionsUsecase } from './usecases/get-todo-options/get-todo-options.usecase';
@@ -20,6 +20,12 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => {
         return new InMemoryTodoOptionsService(ALL_ITEM_OPTIONS);
       }
+    },{
+      provide: UpdateTodoOptionsGateway,
+      useFactory: (todoOptionGateway: TodoOptionsGateway) => {
+        return todoOptionGateway;
+      }, 
+      deps: [TodoOptionsGateway]
     },{
       provide: TodoListGateway,
       useFactory: () => {
