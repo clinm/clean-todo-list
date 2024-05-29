@@ -8,6 +8,7 @@ import { TodoListGateway } from '../../infra/todo-list/todo-list.gateway';
 import { oneTodo } from '../../infra/todo-list/todo-list.fixture';
 import { InMemoryTodoOptionsService } from '../../infra/todo-options/in-memory-todo-options.service';
 import { ALL_ITEM_OPTIONS, REMAINING_ITEM_OPTIONS } from '../../infra/todo-options/todo-options.fixture';
+import { TodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
 
 describe("Feature : Display todo list", () => {
 
@@ -23,7 +24,7 @@ describe("Feature : Display todo list", () => {
         // GIVEN
         const todoListGateway = new InMemoryTodoListService([]);
         const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
+        const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
         const res$ = getTodoListUsecase.run();
@@ -36,7 +37,7 @@ describe("Feature : Display todo list", () => {
         // GIVEN
         const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2)]);
         const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
+        const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
         const res$ = getTodoListUsecase.run();
@@ -49,7 +50,7 @@ describe("Feature : Display todo list", () => {
         // GIVEN
         const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
         const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
+        const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
         const res$ = getTodoListUsecase.run();
@@ -62,7 +63,7 @@ describe("Feature : Display todo list", () => {
         // GIVEN
         const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
         const todoOptionGateway = new InMemoryTodoOptionsService(ALL_ITEM_OPTIONS);
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
+        const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
         const res$ = getTodoListUsecase.run();
@@ -75,7 +76,7 @@ describe("Feature : Display todo list", () => {
         // GIVEN
         const todoListGateway = new ErrorTodoListGateway();
         const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
-        const getTodoListUsecase = new GetTodoListUsecase(todoListGateway, todoOptionGateway);
+        const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
         const res$ = getTodoListUsecase.run();
@@ -121,7 +122,10 @@ describe("Feature : Display todo list", () => {
     function expectError(): TodoListVM {
         return { type: TodoListViewModelType.Error, message: "Une erreur est survenue" };
     }
-
+    
+    function createUsecase(todoListGateway: TodoListGateway, todoOptionGateway: TodoOptionsGateway) {
+        return new GetTodoListUsecase(todoListGateway, todoOptionGateway);
+    }
     class ErrorTodoListGateway implements TodoListGateway {
         
         getAll(): Observable<TodoItem[]> {
@@ -129,4 +133,5 @@ describe("Feature : Display todo list", () => {
         }
     }
 });
+
 
