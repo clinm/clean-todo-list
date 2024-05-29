@@ -6,8 +6,6 @@ export class InMemoryTodoOptionsService implements TodoOptionsGateway, UpdateTod
 
     private optionsSubject: BehaviorSubject<TodoOptions>;
 
-    private options$!: Observable<TodoOptions>;
-
     constructor(private options: TodoOptions) {
         this.optionsSubject = new BehaviorSubject(this.options);
     }
