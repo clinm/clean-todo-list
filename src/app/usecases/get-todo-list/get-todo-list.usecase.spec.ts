@@ -1,14 +1,14 @@
-import { TestScheduler } from 'rxjs/testing';
 import { Observable, throwError } from 'rxjs';
-import { InMemoryTodoListService } from "../../infra/todo-list/in-memory-todo-list.service";
+import { TestScheduler } from 'rxjs/testing';
 import { TodoItem } from "../../infra/todo-list/todo-item.model";
-import { GetTodoListUsecase } from "./get-todo-list.usecase";
-import { TodoListVM, TodoListViewModelType } from "./todo-list.vm";
-import { TodoListGateway } from '../../infra/todo-list/todo-list.gateway';
-import { oneTodo } from '../../infra/todo-list/todo-list.fixture';
+import { DummyTodoListService, oneTodo } from '../../infra/todo-list/todo-list.fixture';
+import { GetTodoItemEvents, TodoListGateway } from '../../infra/todo-list/todo-list.gateway';
 import { InMemoryTodoOptionsService } from '../../infra/todo-options/in-memory-todo-options.service';
 import { ALL_ITEM_OPTIONS, REMAINING_ITEM_OPTIONS } from '../../infra/todo-options/todo-options.fixture';
 import { TodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
+import { TodoListService } from '../../services/todo-list.service';
+import { GetTodoListUsecase } from "./get-todo-list.usecase";
+import { TodoListVM, TodoListViewModelType } from "./todo-list.vm";
 
 describe("Feature : Display todo list", () => {
 
@@ -22,7 +22,7 @@ describe("Feature : Display todo list", () => {
 
     it("Example : No todos", () => {
         // GIVEN
-        const todoListGateway = new InMemoryTodoListService([]);
+        const todoListGateway = createDummyTodoListService([]);
         const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
@@ -35,7 +35,7 @@ describe("Feature : Display todo list", () => {
 
     it("Example : Todo with two items", () => {
         // GIVEN
-        const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2)]);
+        const todoListGateway = createDummyTodoListService([oneTodo(1), oneTodo(2)]);
         const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
@@ -48,7 +48,7 @@ describe("Feature : Display todo list", () => {
 
     it("Example : Todo with only 'todo' items", () => {
         // GIVEN
-        const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
+        const todoListGateway = createDummyTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
         const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
@@ -61,7 +61,7 @@ describe("Feature : Display todo list", () => {
 
     it("Example : Todo with 'completed' items", () => {
         // GIVEN
-        const todoListGateway = new InMemoryTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
+        const todoListGateway = createDummyTodoListService([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
         const todoOptionGateway = new InMemoryTodoOptionsService(ALL_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
@@ -85,8 +85,40 @@ describe("Feature : Display todo list", () => {
         thenExpectValue(res$, expectError());
     });
 
+    it("Example : event on todo update item action", () => {
+        // GIVEN
+        testScheduler.run((helpers) => {
+            const { cold, expectObservable } = helpers;
+
+            const updateEvents    = '-----a-b-';
+            const expectedMarbles = '(ab)-c-d-';
+            const updateValues = {
+                a: {id: 1, title: "My item 1", checked: true},
+                b: {id: 2, title: "My item 2", checked: true}
+            }
+            const expectedValues = {
+                a: expectLoading(),
+                b: expectTodoWithTwoItems(false, false),
+                c: expectTodoWithTwoItems(true, false),
+                d: expectTodoWithTwoItems(true, true)
+            };
+
+            const todoListGateway = createDummyTodoListService([oneTodo(1), oneTodo(2)]);
+            const todoOptionGateway = new InMemoryTodoOptionsService(ALL_ITEM_OPTIONS);
+            const getTodoItemEvents = new SchedulerGetTodoItemEvents(cold(updateEvents, updateValues));
+            const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway, getTodoItemEvents);
+
+
+            // WHEN
+            const res$ = getTodoListUsecase.run();
+    
+            // THEN
+            expectObservable(res$).toBe(expectedMarbles, expectedValues);
+        });
+    });
+
     function thenExpectValue(res$: Observable<TodoListVM>, value: TodoListVM) {
-        const expectedMarbles = '(a-b';
+        const expectedMarbles = '(ab)--';
         const expectedValues = {
             a: expectLoading(),
             b: value,
@@ -104,9 +136,9 @@ describe("Feature : Display todo list", () => {
         return { type: TodoListViewModelType.NoTodo, message: "Aucune tâche à effectuer" };
     }
 
-    function expectTodoWithTwoItems(): TodoListVM {
-        const items = [ {id: 1, title: "My item 1", checked: false}, 
-                        {id: 2, title: "My item 2", checked: false}
+    function expectTodoWithTwoItems(checked1: boolean = false, checked2: boolean = false): TodoListVM {
+        const items = [ {id: 1, title: "My item 1", checked: checked1}, 
+                        {id: 2, title: "My item 2", checked: checked2}
                     ];
         return { type: TodoListViewModelType.Todos, items: items };
     }
@@ -123,14 +155,31 @@ describe("Feature : Display todo list", () => {
         return { type: TodoListViewModelType.Error, message: "Une erreur est survenue" };
     }
     
-    function createUsecase(todoListGateway: TodoListGateway, todoOptionGateway: TodoOptionsGateway) {
-        return new GetTodoListUsecase(todoListGateway, todoOptionGateway);
+    function createUsecase(todoListGateway: TodoListGateway,
+                            todoOptionGateway: TodoOptionsGateway,
+                            getTodoItemEvents: GetTodoItemEvents = new SchedulerGetTodoItemEvents(testScheduler.createColdObservable('-'))) {
+        const todoListService = new TodoListService(todoListGateway, getTodoItemEvents);
+        return new GetTodoListUsecase(todoListService, todoOptionGateway);
+    }
+
+    function createDummyTodoListService(todos: TodoItem[]): DummyTodoListService {
+        return new DummyTodoListService(testScheduler.createColdObservable('a', {a: todos}));
     }
     class ErrorTodoListGateway implements TodoListGateway {
         
         getAll(): Observable<TodoItem[]> {
             return throwError(() => new Error('Error'));
         }
+    }
+
+    class SchedulerGetTodoItemEvents implements GetTodoItemEvents {
+
+        constructor(private events: Observable<TodoItem>) { }
+
+        get(): Observable<TodoItem> {
+            return this.events;
+        }
+        
     }
 });
 

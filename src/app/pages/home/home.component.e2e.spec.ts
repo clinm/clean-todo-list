@@ -3,13 +3,14 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { ComponentFixture, TestBed, fakeAsync, tick } from "@angular/core/testing";
 import { MatRadioButtonHarness } from '@angular/material/radio/testing';
 import { InMemoryTodoListService } from "../../infra/todo-list/in-memory-todo-list.service";
-import { oneTodo } from "../../infra/todo-list/todo-list.fixture";
+import { DummyGetTodoItemEvents, oneTodo } from "../../infra/todo-list/todo-list.fixture";
 import { InMemoryTodoOptionsService } from '../../infra/todo-options/in-memory-todo-options.service';
 import { REMAINING_ITEM_OPTIONS } from '../../infra/todo-options/todo-options.fixture';
 import { GetTodoListUsecase } from "../../usecases/get-todo-list/get-todo-list.usecase";
 import { GetTodoOptionsUsecase } from '../../usecases/get-todo-options/get-todo-options.usecase';
 import { HomeComponent } from "./home.component";
 import { UpdateTodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
+import { TodoListService } from '../../services/todo-list.service';
 
 describe("Home", () => {
 
@@ -45,10 +46,11 @@ describe("Home", () => {
     }));
 
     function givenConfiguration(todoListGateway: InMemoryTodoListService, optionGateway: InMemoryTodoOptionsService): void {
+      const todoListService = new TodoListService(todoListGateway, new DummyGetTodoItemEvents());
       TestBed.configureTestingModule({
         imports: [HomeComponent],
         providers: [
-          { provide: GetTodoListUsecase, useValue: new GetTodoListUsecase(todoListGateway, optionGateway)},
+          { provide: GetTodoListUsecase, useValue: new GetTodoListUsecase(todoListService, optionGateway)},
           { provide: GetTodoOptionsUsecase, useValue: new GetTodoOptionsUsecase(optionGateway)},
           { provide: UpdateTodoOptionsGateway, useValue: optionGateway}
         ]
