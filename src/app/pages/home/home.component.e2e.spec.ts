@@ -29,6 +29,7 @@ describe("Home", () => {
 
       // THEN
       await expectItemsCount(2);
+      await expectRemainingOptionSelected();
     }));
 
     it("Example : Checked item with remaining filter", fakeAsync(async() => {
@@ -93,6 +94,12 @@ describe("Home", () => {
       const groups = await loader.getAllHarnesses(MatRadioButtonHarness);
       await groups[0].check();
       waitForLoading();
+    }
+
+    async function expectRemainingOptionSelected() {
+      const groups = await loader.getAllHarnesses(MatRadioButtonHarness);
+      const isChecked = await groups[1].isChecked();
+      expect(isChecked).toBeTrue();
     }
 
     async function whenCheckItemNumber(index: number) {
