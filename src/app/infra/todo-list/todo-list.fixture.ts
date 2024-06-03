@@ -1,25 +1,34 @@
-import { Observable, Subject } from "rxjs";
+import { Observable } from "rxjs";
+import { TestScheduler } from "rxjs/testing";
 import { TodoItem } from "./todo-item.model";
 import { GetTodoItemEvents, TodoListGateway } from "./todo-list.gateway";
 
 export function oneTodo(id: number, checked: boolean = false): TodoItem {
-        return {id: id, title: "My item " + id, checked: checked};
+    return {id: id, title: "My item " + id, checked: checked};
 }
 
-export class DummyGetTodoItemEvents implements GetTodoItemEvents {
-        
-        private todoItem$ = new Subject<TodoItem>();
+export class SchedulerTodoListGateway implements TodoListGateway {
 
-        get(): Observable<TodoItem> {
-                return this.todoItem$.asObservable(); 
-        }
+    constructor(private testScheduler: TestScheduler, private values: TodoItem[]) { }
+
+    getAll(): Observable<TodoItem[]> {
+        return this.testScheduler.createColdObservable('-a', { a: this.values});
+    }
 }
 
-export class DummyTodoListService implements TodoListGateway {
+export class SchedulerErrorTodoListGateway implements TodoListGateway {
+    constructor(private testScheduler: TestScheduler, private value: any) { }
 
-        constructor(private todos$: Observable<TodoItem[]>) {}
-    
-        getAll(): Observable<TodoItem[]> {
-            return this.todos$;
-        }    
+    getAll(): Observable<TodoItem[]> {
+        return this.testScheduler.createColdObservable('--#', undefined, this.value);
+    }
+}
+
+export class SchedulerGetTodoItemEvents implements GetTodoItemEvents {
+
+    constructor(private testScheduler: TestScheduler, private events: string, private values?: any) { }
+
+    get(): Observable<TodoItem> {
+        return this.testScheduler.createColdObservable(this.events, this.values);
+    }
 }

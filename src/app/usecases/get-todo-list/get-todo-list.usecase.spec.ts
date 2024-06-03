@@ -1,11 +1,11 @@
 import { Observable } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
 import { TodoItem } from "../../infra/todo-list/todo-item.model";
-import { oneTodo } from '../../infra/todo-list/todo-list.fixture';
+import { SchedulerErrorTodoListGateway, SchedulerGetTodoItemEvents, SchedulerTodoListGateway, oneTodo } from '../../infra/todo-list/todo-list.fixture';
 import { GetTodoItemEvents, TodoListGateway } from '../../infra/todo-list/todo-list.gateway';
-import { InMemoryTodoOptionsService } from '../../infra/todo-options/in-memory-todo-options.service';
-import { ALL_ITEM_OPTIONS, REMAINING_ITEM_OPTIONS } from '../../infra/todo-options/todo-options.fixture';
+import { ALL_ITEM_OPTIONS, REMAINING_ITEM_OPTIONS, SchedulerTodoOptionsGateway } from '../../infra/todo-options/todo-options.fixture';
 import { TodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
+import { TodoOptions } from '../../infra/todo-options/todo-options.model';
 import { TodoListService } from '../../services/todo-list.service';
 import { GetTodoListUsecase } from "./get-todo-list.usecase";
 import { TodoListVM, TodoListViewModelType } from "./todo-list.vm";
@@ -22,8 +22,8 @@ describe("Feature : Display todo list", () => {
 
     it("Example : No todos", () => {
         // GIVEN
-        const todoListGateway = new SchedulerTodoListGateway([]);
-        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const todoListGateway = givenTodoListGateway([]);
+        const todoOptionGateway = givenOptions(REMAINING_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
@@ -36,8 +36,8 @@ describe("Feature : Display todo list", () => {
     
     it("Example : No todos because all checked", () => {
         // GIVEN
-        const todoListGateway = new SchedulerTodoListGateway([oneTodo(1, true), oneTodo(2, true)]);
-        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const todoListGateway = givenTodoListGateway([oneTodo(1, true), oneTodo(2, true)]);
+        const todoOptionGateway = givenOptions(REMAINING_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
@@ -49,8 +49,8 @@ describe("Feature : Display todo list", () => {
 
     it("Example : Todo with two items", () => {
         // GIVEN
-        const todoListGateway = new SchedulerTodoListGateway([oneTodo(1), oneTodo(2)]);
-        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const todoListGateway = givenTodoListGateway([oneTodo(1), oneTodo(2)]);
+        const todoOptionGateway = givenOptions(REMAINING_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
@@ -62,8 +62,8 @@ describe("Feature : Display todo list", () => {
 
     it("Example : Todo with only 'todo' items", () => {
         // GIVEN
-        const todoListGateway = new SchedulerTodoListGateway([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
-        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const todoListGateway = givenTodoListGateway([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
+        const todoOptionGateway = givenOptions(REMAINING_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
@@ -75,8 +75,8 @@ describe("Feature : Display todo list", () => {
 
     it("Example : Todo with 'completed' items", () => {
         // GIVEN
-        const todoListGateway = new SchedulerTodoListGateway([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
-        const todoOptionGateway = new InMemoryTodoOptionsService(ALL_ITEM_OPTIONS);
+        const todoListGateway = givenTodoListGateway([oneTodo(1), oneTodo(2), oneTodo(3, true)]);
+        const todoOptionGateway = givenOptions(ALL_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
@@ -88,8 +88,8 @@ describe("Feature : Display todo list", () => {
 
     xit("Example : Error while loading todos", () => {
         // GIVEN
-        const todoListGateway = new SchedulerErrorTodoListGateway("Unknown error");
-        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const todoListGateway = givenTodoListError("Unknown error");
+        const todoOptionGateway = givenOptions(REMAINING_ITEM_OPTIONS);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
 
         // WHEN
@@ -114,9 +114,9 @@ describe("Feature : Display todo list", () => {
             d: expectTodoWithTwoItems(true, true)
         };
 
-        const todoListGateway = new SchedulerTodoListGateway([oneTodo(1), oneTodo(2)]);
-        const todoOptionGateway = new InMemoryTodoOptionsService(ALL_ITEM_OPTIONS);
-        const getTodoItemEvents = new SchedulerGetTodoItemEvents(updateEvents, updateValues);
+        const todoListGateway = givenTodoListGateway([oneTodo(1), oneTodo(2)]);
+        const todoOptionGateway = givenOptions(ALL_ITEM_OPTIONS);
+        const getTodoItemEvents = givenTodoItemEvents(updateEvents, updateValues);
         const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway, getTodoItemEvents);
 
 
@@ -168,36 +168,25 @@ describe("Feature : Display todo list", () => {
     
     function createUsecase(todoListGateway: TodoListGateway,
                             todoOptionGateway: TodoOptionsGateway,
-                            getTodoItemEvents: GetTodoItemEvents = new SchedulerGetTodoItemEvents('-')) {
+                            getTodoItemEvents: GetTodoItemEvents = givenTodoItemEvents('-')) {
         const todoListService = new TodoListService(todoListGateway, getTodoItemEvents);
         return new GetTodoListUsecase(todoListService, todoOptionGateway);
     }
 
-    class SchedulerTodoListGateway implements TodoListGateway {
-
-        constructor(private values: TodoItem[]) { }
-
-        getAll(): Observable<TodoItem[]> {
-            return testScheduler.createColdObservable('-a', { a: this.values});
-        }
+    function givenTodoListGateway(items: TodoItem[]) {
+        return new SchedulerTodoListGateway(testScheduler, items);
     }
 
-    class SchedulerErrorTodoListGateway implements TodoListGateway {
-        constructor(private value: any) { }
-
-        getAll(): Observable<TodoItem[]> {
-            return testScheduler.createColdObservable('--#', undefined, this.value);
-        }
+    function givenTodoListError(error: any) {
+        return new SchedulerErrorTodoListGateway(testScheduler, error);
     }
 
-    class SchedulerGetTodoItemEvents implements GetTodoItemEvents {
+    function givenTodoItemEvents(events: string, value?: any) {
+        return new SchedulerGetTodoItemEvents(testScheduler, events, value);
+    }
 
-        constructor(private events: string, private values?: any) { }
-
-        get(): Observable<TodoItem> {
-            return testScheduler.createColdObservable(this.events, this.values);
-        }
-        
+    function givenOptions(options: TodoOptions) {
+        return new SchedulerTodoOptionsGateway(testScheduler, options);
     }
 });
 

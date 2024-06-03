@@ -1,10 +1,7 @@
-import { GetTodoOptionsUsecase } from "./get-todo-options.usecase";
-import { ALL_ITEM_OPTIONS, REMAINING_ITEM_OPTIONS } from '../../infra/todo-options/todo-options.fixture';
-import { TodoOptionsBuilder } from "./todo-options.builder";
 import { TestScheduler } from "rxjs/testing";
-import { TodoOptionsGateway } from "../../infra/todo-options/todo-options.gateway";
-import { Observable } from "rxjs";
-import { TodoOptions } from "../../infra/todo-options/todo-options.model";
+import { ALL_ITEM_OPTIONS, REMAINING_ITEM_OPTIONS, SchedulerMultipleTodoOptionsGateway } from '../../infra/todo-options/todo-options.fixture';
+import { GetTodoOptionsUsecase } from "./get-todo-options.usecase";
+import { TodoOptionsBuilder } from "./todo-options.builder";
 
 describe("Feature: Options", () => {
 
@@ -28,8 +25,7 @@ describe("Feature: Options", () => {
             b: ALL_ITEM_OPTIONS
         };
 
-        const optionsProducer = testScheduler.createColdObservable(optionProducer, optionsValues);
-        const optionsGateway = new SchedulerTodoOptionsService(optionsProducer);
+        const optionsGateway = givenTodoOptions(optionProducer, optionsValues);
         const getTodoOptionUsecase = new GetTodoOptionsUsecase(optionsGateway);
 
         const consumedValues = {
@@ -47,13 +43,7 @@ describe("Feature: Options", () => {
         testScheduler.flush();
     });
 
-    class SchedulerTodoOptionsService implements TodoOptionsGateway {
-
-        constructor(private options: Observable<TodoOptions>) {}
-    
-        get(): Observable<TodoOptions> {
-            return this.options;
-        }
-    
+    function givenTodoOptions(marbles: string, values: any) {
+        return new SchedulerMultipleTodoOptionsGateway(testScheduler, marbles, values);
     }
 });
