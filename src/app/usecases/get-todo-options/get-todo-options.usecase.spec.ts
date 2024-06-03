@@ -17,38 +17,34 @@ describe("Feature: Options", () => {
     });
 
     it("Example: Get stored options change events", () => {
-        testScheduler.run((helpers) => {
-            const { cold, expectObservable } = helpers;
+        // GIVEN
+        const optionProducer  = 'a--b---a';
+        const firstConsumer   = 'a--b---a';
+        const delaySubs       = '-^------';
+        const delayConsumer   = '-a-b---a';
 
-            // GIVEN
-            const optionProducer  = 'a--b---a';
-            const firstConsumer   = 'a--b---a';
-            const delaySubs       = '-^------';
-            const delayConsumer   = '-a-b---a';
+        const optionsValues = {
+            a: REMAINING_ITEM_OPTIONS,
+            b: ALL_ITEM_OPTIONS
+        };
 
-            const optionsValues = {
-                a: REMAINING_ITEM_OPTIONS,
-                b: ALL_ITEM_OPTIONS
-            };
+        const optionsProducer = testScheduler.createColdObservable(optionProducer, optionsValues);
+        const optionsGateway = new SchedulerTodoOptionsService(optionsProducer);
+        const getTodoOptionUsecase = new GetTodoOptionsUsecase(optionsGateway);
 
-            const optionsProducer = cold(optionProducer, optionsValues);
-            const optionsGateway = new SchedulerTodoOptionsService(optionsProducer);
-            const getTodoOptionUsecase = new GetTodoOptionsUsecase(optionsGateway);
-    
-            const consumedValues = {
-                a: new TodoOptionsBuilder().withRemaining(true).build(),
-                b: new TodoOptionsBuilder().withRemaining(false).build()
-            };
+        const consumedValues = {
+            a: new TodoOptionsBuilder().withRemaining(true).build(),
+            b: new TodoOptionsBuilder().withRemaining(false).build()
+        };
 
-            // WHEN
-            const res$ = getTodoOptionUsecase.run();
-            const resDelayed$ = getTodoOptionUsecase.run();
-    
-            // THEN
-            expectObservable(res$).toBe(firstConsumer, consumedValues);
-            expectObservable(resDelayed$, delaySubs).toBe(delayConsumer, consumedValues);
-        });
-        
+        // WHEN
+        const res$ = getTodoOptionUsecase.run();
+        const resDelayed$ = getTodoOptionUsecase.run();
+
+        // THEN
+        testScheduler.expectObservable(res$).toBe(firstConsumer, consumedValues);
+        testScheduler.expectObservable(resDelayed$, delaySubs).toBe(delayConsumer, consumedValues);
+        testScheduler.flush();
     });
 
     class SchedulerTodoOptionsService implements TodoOptionsGateway {

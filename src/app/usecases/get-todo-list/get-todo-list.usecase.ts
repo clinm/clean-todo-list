@@ -1,4 +1,4 @@
-import { Observable, catchError, combineLatestWith, map, of, startWith, tap } from "rxjs";
+import { Observable, catchError, combineLatestWith, map, of, startWith } from "rxjs";
 import { TodoItem } from "../../infra/todo-list/todo-item.model";
 import { TodoListBuilder } from "./todo-list.builder";
 import { ItemVM, TodoListVM, TodoListViewModelType } from "./todo-list.vm";
