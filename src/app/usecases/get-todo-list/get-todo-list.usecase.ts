@@ -22,10 +22,11 @@ export class GetTodoListUsecase {
     }
 
     private mapToVM(todos: TodoItem[], options: TodoOptions): TodoListVM {
-        if (todos.length === 0) {
+        const filteredTodos = this.filterTodos(todos, options);
+        if (filteredTodos.length === 0) {
             return this.buildNoTask();
         } else {
-            return this.buildWithTasks(todos, options);
+            return this.buildWithTasks(filteredTodos);
         }
     }
 
@@ -41,9 +42,12 @@ export class GetTodoListUsecase {
         return new TodoListBuilder().withType(TodoListViewModelType.NoTodo).withMessage("Aucune tâche à effectuer").build();
     }
 
-    private buildWithTasks(todos: TodoItem[], options: TodoOptions): TodoListVM {
-        const items: ItemVM[] = todos.filter(t => !options.remaining || !t.checked)
-                                    .map(t => ({id: t.id, title: t.title, checked: t.checked}));
+    private filterTodos(todos: TodoItem[], options: TodoOptions): TodoItem[] {
+        return todos.filter(t => !options.remaining || !t.checked);
+    }
+
+    private buildWithTasks(todos: TodoItem[]): TodoListVM {
+        const items: ItemVM[] = todos.map(t => ({id: t.id, title: t.title, checked: t.checked}));
 
         return new TodoListBuilder()
                         .withType(TodoListViewModelType.Todos)

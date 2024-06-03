@@ -33,6 +33,20 @@ describe("Feature : Display todo list", () => {
         thenExpectValue(res$, expectNoTodo());
     });
 
+    
+    it("Example : No todos because all checked", () => {
+        // GIVEN
+        const todoListGateway = new SchedulerTodoListGateway([oneTodo(1, true), oneTodo(2, true)]);
+        const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+        const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
+
+        // WHEN
+        const res$ = getTodoListUsecase.run();
+
+        // THEN
+        thenExpectValue(res$, expectNoTodo());
+    });
+
     it("Example : Todo with two items", () => {
         // GIVEN
         const todoListGateway = new SchedulerTodoListGateway([oneTodo(1), oneTodo(2)]);
