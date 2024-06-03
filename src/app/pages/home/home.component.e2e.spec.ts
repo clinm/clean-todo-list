@@ -3,15 +3,13 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { ComponentFixture, TestBed, fakeAsync, tick } from "@angular/core/testing";
 import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
 import { MatRadioButtonHarness } from '@angular/material/radio/testing';
+import { infraRootProvider } from '../../infra/infra.provider';
 import { InMemoryTodoListService } from "../../infra/todo-list/in-memory-todo-list.service";
 import { oneTodo } from "../../infra/todo-list/todo-list.fixture";
-import { UpdateTodoItemGateway } from '../../infra/todo-list/todo-list.gateway';
 import { InMemoryTodoOptionsService } from '../../infra/todo-options/in-memory-todo-options.service';
 import { REMAINING_ITEM_OPTIONS } from '../../infra/todo-options/todo-options.fixture';
-import { UpdateTodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
-import { TodoListService } from '../../services/todo-list.service';
-import { GetTodoListUsecase } from "../../usecases/get-todo-list/get-todo-list.usecase";
-import { GetTodoOptionsUsecase } from '../../usecases/get-todo-options/get-todo-options.usecase';
+import { servicesProvider } from '../../services/services.provider';
+import { usecasesProviders } from '../../usecases/usecases.provider';
 import { HomeComponent } from "./home.component";
 
 describe("Home", () => {
@@ -62,14 +60,12 @@ describe("Home", () => {
     }));
 
     function givenConfiguration(todoListGateway: InMemoryTodoListService, optionGateway: InMemoryTodoOptionsService): void {
-      const todoListService = new TodoListService(todoListGateway, todoListGateway);
       TestBed.configureTestingModule({
         imports: [HomeComponent],
         providers: [
-          { provide: GetTodoListUsecase, useValue: new GetTodoListUsecase(todoListService, optionGateway)},
-          { provide: GetTodoOptionsUsecase, useValue: new GetTodoOptionsUsecase(optionGateway)},
-          { provide: UpdateTodoOptionsGateway, useValue: optionGateway},
-          { provide: UpdateTodoItemGateway, useValue: todoListGateway}
+          infraRootProvider(todoListGateway, optionGateway),
+          servicesProvider(),
+          usecasesProviders()
         ]
       });
       fixture = TestBed.createComponent(HomeComponent);
