@@ -1,6 +1,6 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { TodoListGateway } from "./infra/todo-list/todo-list.gateway";
+import { GetTodoItemEvents, TodoListGateway, UpdateTodoItemGateway } from "./infra/todo-list/todo-list.gateway";
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -11,7 +11,6 @@ import { ALL_ITEM_OPTIONS } from './infra/todo-options/todo-options.fixture';
 import { InMemoryTodoOptionsService } from './infra/todo-options/in-memory-todo-options.service';
 import { GetTodoOptionsUsecase } from './usecases/get-todo-options/get-todo-options.usecase';
 import { TodoListService } from './services/todo-list.service';
-import { DummyGetTodoItemEvents } from './infra/todo-list/todo-list.fixture';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,11 +37,23 @@ export const appConfig: ApplicationConfig = {
         return new InMemoryTodoListService(items, 3000);
       }
     },{
-      provide: TodoListService,
+      provide: UpdateTodoItemGateway,
       useFactory: (todoListGateway: TodoListGateway) => {
-        return new TodoListService(todoListGateway, new DummyGetTodoItemEvents());
-      }, 
+        return todoListGateway;
+      },
       deps: [TodoListGateway]
+    },{
+      provide: GetTodoItemEvents,
+      useFactory: (todoListGateway: TodoListGateway) => {
+        return todoListGateway;
+      },
+      deps: [TodoListGateway]
+    },{
+      provide: TodoListService,
+      useFactory: (todoListGateway: TodoListGateway, getTodoItemEvents: GetTodoItemEvents) => {
+        return new TodoListService(todoListGateway, getTodoItemEvents);
+      }, 
+      deps: [TodoListGateway, GetTodoItemEvents]
     }, {
       provide: GetTodoListUsecase,
       useFactory: (todoListService: TodoListService, todoOptionGateway: TodoOptionsGateway) => {
