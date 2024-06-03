@@ -1,7 +1,7 @@
 <mat-list>
     @for (item of items; track item.id) {
         <mat-list-item>
-            <mat-checkbox [checked]="item.checked">
+            <mat-checkbox [checked]="item.checked" (change)="update(item, $event)">
                 {{ item.title }}
             </mat-checkbox>
         </mat-list-item>
