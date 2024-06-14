@@ -1,3 +1,5 @@
 export type TodoOptionVm = {
-    remaining: boolean
+    remaining: boolean,
+    totalItemCount: number,
+    remainingItemCount: number
 }

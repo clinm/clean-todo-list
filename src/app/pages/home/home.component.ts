@@ -1,26 +1,30 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { Observable, distinct, distinctUntilChanged } from 'rxjs';
+import { Observable } from 'rxjs';
+import { UpdateTodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
 import { GetTodoListUsecase } from '../../usecases/get-todo-list/get-todo-list.usecase';
 import { TodoListVM, TodoListViewModelType } from '../../usecases/get-todo-list/todo-list.vm';
-import { DisplayListTodoComponent } from './components/display-list-todo/display-list-todo.component';
 import { GetTodoOptionsUsecase } from '../../usecases/get-todo-options/get-todo-options.usecase';
-import { UpdateTodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
+import { TodoOptionVm } from '../../usecases/get-todo-options/todo-options.vm';
+import { DisplayListTodoComponent } from './components/display-list-todo/display-list-todo.component';
 
 @Component({
   selector: 'home-root',
   standalone: true,
-  imports: [MatToolbarModule, CommonModule, MatCardModule, MatRadioModule, DisplayListTodoComponent, ReactiveFormsModule],
+  imports: [MatToolbarModule, CommonModule, MatCardModule, MatRadioModule, DisplayListTodoComponent, ReactiveFormsModule, MatBadgeModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
 
   public todos$!: Observable<TodoListVM>;
+
+  public options$!: Observable<TodoOptionVm>;
 
   TodoListViewModelType = TodoListViewModelType;
 
@@ -33,14 +37,15 @@ export class HomeComponent implements OnInit {
               private updateTodoOptionsGateway: UpdateTodoOptionsGateway) {}
 
   ngOnInit(): void {
+    this.options$ = this.getTodoOptions.run();
+    this.todos$ = this.getTodoList.run();
+
     this.initFilterListener();
 
-    this.todos$ = this.getTodoList.run();
   }
 
   private initFilterListener() {
-    this.getTodoOptions
-          .run()
+    this.options$
           .subscribe(option => {
             this.filterForm.patchValue(option, { emitEvent: false});
           });

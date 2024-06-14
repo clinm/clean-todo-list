@@ -14,10 +14,10 @@ export function usecasesProviders() {
             deps: [TodoListService, TodoOptionsGateway]
         }, {
             provide: GetTodoOptionsUsecase,
-            useFactory: (todoOptionGateway: TodoOptionsGateway) => {
-              return new GetTodoOptionsUsecase(todoOptionGateway);
+            useFactory: (todoListService: TodoListService, todoOptionGateway: TodoOptionsGateway) => {
+              return new GetTodoOptionsUsecase(todoOptionGateway, todoListService);
             }, 
-            deps: [TodoOptionsGateway]
+            deps: [TodoListService, TodoOptionsGateway]
         }
     ]);
 }
