@@ -4,6 +4,7 @@
   "mutate": [
     "src/**/*.ts",
     "!src/**/*.spec.ts",
+    "!src/**/*.fixture.ts",
     "!src/main.ts",
     "!src/app/infra/infra.provider.ts",
     "!src/app/app.config.ts",
