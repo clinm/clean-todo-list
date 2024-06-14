@@ -128,6 +128,34 @@ describe("Feature : Display todo list", () => {
         testScheduler.flush();
     });
 
+
+    it("Example : event on todo create item action", () => {
+        // GIVEN
+        const updateEvents    = '-----a-';
+        const expectedMarbles = 'ab---c-';
+        const updateValues = {
+            a: {id: 3, title: "My added item", checked: false}
+        }
+        const expectedValues = {
+            a: expectLoading(),
+            b: expectTodoWithTwoItems(true, true),
+            c: expectTodoWithTwoItemsAndACreatedOne()
+        };
+
+        const todoListGateway = givenTodoListGateway([oneTodo(1, true), oneTodo(2, true)]);
+        const todoOptionGateway = givenOptions(ALL_ITEM_OPTIONS);
+        const getTodoItemEvents = givenTodoItemEvents(updateEvents, updateValues);
+        const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway, getTodoItemEvents);
+
+
+        // WHEN
+        const res$ = getTodoListUsecase.run();
+
+        // THEN
+        testScheduler.expectObservable(res$).toBe(expectedMarbles, expectedValues);
+        testScheduler.flush();
+    });
+
     function thenExpectValue(res$: Observable<TodoListVM>, value: TodoListVM) {
         const expectedMarbles = 'ab--';
         const expectedValues = {
@@ -150,6 +178,14 @@ describe("Feature : Display todo list", () => {
     function expectTodoWithTwoItems(checked1: boolean = false, checked2: boolean = false): TodoListVM {
         const items = [ {id: 1, title: "My item 1", checked: checked1}, 
                         {id: 2, title: "My item 2", checked: checked2}
+                    ];
+        return { type: TodoListViewModelType.Todos, items: items };
+    }
+
+    function expectTodoWithTwoItemsAndACreatedOne(): TodoListVM {
+        const items = [ {id: 1, title: "My item 1", checked: true}, 
+                        {id: 2, title: "My item 2", checked: true},
+                        {id: 3, title: "My added item", checked: false}
                     ];
         return { type: TodoListViewModelType.Todos, items: items };
     }

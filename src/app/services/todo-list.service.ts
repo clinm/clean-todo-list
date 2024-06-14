@@ -1,4 +1,4 @@
-import { Observable, ReplaySubject, Subject, tap } from "rxjs";
+import { Observable, ReplaySubject } from "rxjs";
 import { TodoItem } from "../infra/todo-list/todo-item.model";
 import { GetTodoItemEvents, TodoListGateway } from "../infra/todo-list/todo-list.gateway";
 
@@ -21,12 +21,19 @@ export class TodoListService {
 
         this.getTodoItemEvents
             .get()
-            .subscribe(event => {
-                const index = this.todoItems.findIndex(item => item.id === event.id);
-                this.todoItems.splice(index, 1, event);
-                this.todoItems$.next(this.todoItems);
-            });
+            .subscribe(event => this.upsert(event));
 
         return this.todoItems$.asObservable();
+    }
+
+    private upsert(event: TodoItem) {
+        const index = this.todoItems.findIndex(item => item.id === event.id);
+
+        if (index > -1) {
+            this.todoItems.splice(index, 1, event);
+        } else {
+            this.todoItems.push(event);
+        }
+        this.todoItems$.next(this.todoItems);
     }
 }
