@@ -1,6 +1,8 @@
 import { TestScheduler } from "rxjs/testing";
 import { oneTodo } from "./todo-list.fixture";
 import { InMemoryTodoListService } from "./in-memory-todo-list.service";
+import { TodoItem } from "./todo-item.model";
+import { CreateTodoItem } from "./create-todo-item.model";
 
 describe("Infra > TodoList Gateway", () => {
 
@@ -32,6 +34,31 @@ describe("Infra > TodoList Gateway", () => {
 
             // THEN
             testScheduler.expectObservable(res$).toBe(consumer, todoItemValues);
+            testScheduler.flush();
+        });
+
+        it("Example : Create event generate a new id ", () => {
+            // GIVEN
+            const todoProducer = '-a';
+            const consumer     = '-a';
+
+            const todoItemValues = {
+                a: { title: "My added item" } as CreateTodoItem
+            };
+
+            const createdItemValue = {
+                a: { id: 1, title: "My added item", checked: false} as TodoItem
+            }
+
+            const todoProducer$ = testScheduler.createColdObservable(todoProducer, todoItemValues);
+            const inMemoryTodoListService = new InMemoryTodoListService([]);
+
+            // WHEN
+            todoProducer$.subscribe(t => inMemoryTodoListService.create(t));
+            const res$ = inMemoryTodoListService.get();
+
+            // THEN
+            testScheduler.expectObservable(res$).toBe(consumer, createdItemValue);
             testScheduler.flush();
         });
     });
