@@ -7,13 +7,14 @@ import { GetTodoListUsecase } from '../../usecases/get-todo-list/get-todo-list.u
 import { TodoListVM, TodoListViewModelType } from '../../usecases/get-todo-list/todo-list.vm';
 import { DisplayListTodoComponent } from './components/display-list-todo/display-list-todo.component';
 import { FilterOptionsComponent } from "./components/filter-options/filter-options.component";
+import { CreateTodoComponent } from './components/create-todo/create-todo.component';
 
 @Component({
     selector: 'home-root',
     standalone: true,
     templateUrl: './home.component.html',
     styleUrl: './home.component.scss',
-    imports: [MatToolbarModule, CommonModule, MatCardModule, DisplayListTodoComponent, FilterOptionsComponent]
+    imports: [MatToolbarModule, CommonModule, MatCardModule, DisplayListTodoComponent, FilterOptionsComponent, CreateTodoComponent]
 })
 export class HomeComponent implements OnInit {
 
