@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from "@angular/core/testin
 import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
 import { MatRadioButtonHarness } from '@angular/material/radio/testing';
 import { MatInputHarness } from '@angular/material/input/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
 import { infraRootProvider } from '../../infra/infra.provider';
 import { InMemoryTodoListService } from "../../infra/todo-list/in-memory-todo-list.service";
 import { oneTodo } from "../../infra/todo-list/todo-list.fixture";
@@ -72,10 +73,25 @@ describe("Home", () => {
       // WHEN
       whenComponentInit();
       await whenCreateItem("My added item");
-      whenValidateCreateForm();
+      await whenValidateCreateForm();
 
       // THEN
       await expectItemsCount(1);
+    }));
+
+    it("Example : Cannot create empty item", fakeAsync(async() => {
+      // GIVEN
+      const todoListGateway = new InMemoryTodoListService([]);
+      const todoOptionGateway = new InMemoryTodoOptionsService(REMAINING_ITEM_OPTIONS);
+      givenConfiguration(todoListGateway, todoOptionGateway);
+
+      // WHEN
+      whenComponentInit();
+      await whenCreateItem("");
+      await whenValidateCreateForm();
+
+      // THEN
+      await expectItemsCount(0);
     }));
 
     function givenConfiguration(todoListGateway: InMemoryTodoListService, optionGateway: InMemoryTodoOptionsService): void {
@@ -117,13 +133,12 @@ describe("Home", () => {
 
     async function whenCreateItem(title: string) {
       const input = await loader.getHarness(MatInputHarness);
-      input.setValue(title);
-      
-      }
-      
-      function whenValidateCreateForm() {
-        const form = fixture.debugElement.query(By.css("app-create-todo form"));
-        form.triggerEventHandler('submit', {});
+      await input.setValue(title);  
+    }
+
+    async function whenValidateCreateForm() {
+      const submitButton = await loader.getHarness(MatButtonHarness);
+      await submitButton.click();
     }
 
     async function expectRemainingOptionSelected() {

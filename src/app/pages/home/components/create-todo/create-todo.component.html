@@ -2,7 +2,7 @@
     <mat-form-field [formGroup]="createForm">
         <mat-label>Que faire ?</mat-label>
         <input matInput type="text" formControlName="title" autofocus>
-        <button matSuffix mat-icon-button type="submit" [disabled]="createForm.invalid">
+        <button id="create-todo-item-action" matSuffix mat-icon-button type="submit" [disabled]="createForm.invalid">
             <mat-icon>send</mat-icon>
         </button>
     </mat-form-field>
