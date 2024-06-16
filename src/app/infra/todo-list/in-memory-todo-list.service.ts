@@ -10,7 +10,7 @@ export class InMemoryTodoListService implements TodoListGateway, UpdateTodoItemG
     private lastId: number;
 
     constructor(private todos: TodoItem[], private delay: number = 0) {
-        this.lastId = this.todos.map(t => t.id).sort((a, b) => a - b).pop() ?? 0;
+        this.lastId = this.todos.map(t => t.id).pop() ?? 0;
     }
     
     getAll(): Observable<TodoItem[]> {
