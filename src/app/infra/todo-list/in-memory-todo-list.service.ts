@@ -1,11 +1,13 @@
 import { Observable, Subject, delay, of } from "rxjs";
+import { CreateTodoItem } from "./create-todo-item.model";
+import { TodoItemEventBuilder } from "./todo-item-event.builder";
+import { TodoItemEvent } from "./todo-item-event.model";
 import { TodoItem } from "./todo-item.model";
 import { CreateTodoItemGateway, GetTodoItemEvents, TodoListGateway, UpdateTodoItemGateway } from "./todo-list.gateway";
-import { CreateTodoItem } from "./create-todo-item.model";
 
 export class InMemoryTodoListService implements TodoListGateway, UpdateTodoItemGateway, GetTodoItemEvents, CreateTodoItemGateway {
 
-    private updateTodoItemSubject = new Subject<TodoItem>();
+    private updateTodoItemSubject = new Subject<TodoItemEvent>();
 
     private lastId: number;
 
@@ -17,17 +19,19 @@ export class InMemoryTodoListService implements TodoListGateway, UpdateTodoItemG
         return of(this.todos).pipe(delay(this.delay));
     }
     
-    get(): Observable<TodoItem> {
+    get(): Observable<TodoItemEvent> {
         return this.updateTodoItemSubject.asObservable();
     }
 
     update(item: TodoItem): void {
-        this.updateTodoItemSubject.next(item);
+        const event = new TodoItemEventBuilder().isUpdate().withItemTodo(item).build();
+        this.updateTodoItemSubject.next(event);
     }
 
     create(item: CreateTodoItem): void {
         const newItem = this.fromCreate(item);
-        this.updateTodoItemSubject.next(newItem);
+        const event = new TodoItemEventBuilder().withItemTodo(newItem).build();
+        this.updateTodoItemSubject.next(event);
     }
 
     private fromCreate(item: CreateTodoItem): TodoItem {

@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
+import { TodoItemEventBuilder } from '../../infra/todo-list/todo-item-event.builder';
 import { TodoItem } from "../../infra/todo-list/todo-item.model";
 import { SchedulerErrorTodoListGateway, SchedulerGetTodoItemEvents, SchedulerTodoListGateway, oneTodo } from '../../infra/todo-list/todo-list.fixture';
 import { GetTodoItemEvents, TodoListGateway } from '../../infra/todo-list/todo-list.gateway';
@@ -103,9 +104,11 @@ describe("Feature : Display todo list", () => {
         // GIVEN
         const updateEvents    = '-----a-b-';
         const expectedMarbles = 'ab---c-d-';
+
+        const builder = new TodoItemEventBuilder().isUpdate();
         const updateValues = {
-            a: {id: 1, title: "My item 1", checked: true},
-            b: {id: 2, title: "My item 2", checked: true}
+            a: builder.withItemTodo(oneTodo(1, true)).build(),
+            b: builder.withItemTodo(oneTodo(2, true)).build()
         }
         const expectedValues = {
             a: expectLoading(),
@@ -133,8 +136,9 @@ describe("Feature : Display todo list", () => {
         // GIVEN
         const updateEvents    = '-----a-';
         const expectedMarbles = 'ab---c-';
+        const builder = new TodoItemEventBuilder();
         const updateValues = {
-            a: {id: 3, title: "My added item", checked: false}
+            a: builder.withItemTodo(oneTodo(3)).build()
         }
         const expectedValues = {
             a: expectLoading(),
@@ -185,7 +189,7 @@ describe("Feature : Display todo list", () => {
     function expectTodoWithTwoItemsAndACreatedOne(): TodoListVM {
         const items = [ {id: 1, title: "My item 1", checked: true}, 
                         {id: 2, title: "My item 2", checked: true},
-                        {id: 3, title: "My added item", checked: false}
+                        {id: 3, title: "My item 3", checked: false}
                     ];
         return { type: TodoListViewModelType.Todos, items: items };
     }

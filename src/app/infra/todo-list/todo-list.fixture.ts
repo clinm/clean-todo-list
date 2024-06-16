@@ -2,6 +2,7 @@ import { Observable } from "rxjs";
 import { TestScheduler } from "rxjs/testing";
 import { TodoItem } from "./todo-item.model";
 import { GetTodoItemEvents, TodoListGateway } from "./todo-list.gateway";
+import { TodoItemEvent } from "./todo-item-event.model";
 
 export function oneTodo(id: number, checked: boolean = false): TodoItem {
     return {id: id, title: "My item " + id, checked: checked};
@@ -28,7 +29,7 @@ export class SchedulerGetTodoItemEvents implements GetTodoItemEvents {
 
     constructor(private testScheduler: TestScheduler, private events: string, private values?: any) { }
 
-    get(): Observable<TodoItem> {
+    get(): Observable<TodoItemEvent> {
         return this.testScheduler.createColdObservable(this.events, this.values);
     }
 }

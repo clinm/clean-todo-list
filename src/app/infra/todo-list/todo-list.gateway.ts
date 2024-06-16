@@ -1,6 +1,7 @@
 import { Observable } from "rxjs";
 import { TodoItem } from "./todo-item.model";
 import { CreateTodoItem } from "./create-todo-item.model";
+import { TodoItemEvent } from "./todo-item-event.model";
 
 export abstract class TodoListGateway {
 
@@ -19,5 +20,5 @@ export abstract class CreateTodoItemGateway {
 
 export abstract class GetTodoItemEvents {
     
-    abstract get(): Observable<TodoItem>;
+    abstract get(): Observable<TodoItemEvent>;
 }

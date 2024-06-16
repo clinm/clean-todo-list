@@ -1,8 +1,8 @@
 import { TestScheduler } from "rxjs/testing";
-import { oneTodo } from "./todo-list.fixture";
-import { InMemoryTodoListService } from "./in-memory-todo-list.service";
-import { TodoItem } from "./todo-item.model";
 import { CreateTodoItem } from "./create-todo-item.model";
+import { InMemoryTodoListService } from "./in-memory-todo-list.service";
+import { TodoItemEventBuilder } from "./todo-item-event.builder";
+import { oneTodo } from "./todo-list.fixture";
 
 describe("Infra > TodoList Gateway", () => {
 
@@ -25,6 +25,12 @@ describe("Infra > TodoList Gateway", () => {
                 b: oneTodo(1, false)
             };
 
+            const builder = new TodoItemEventBuilder().isUpdate();
+            const todoItemConsumedValues = {
+                a: builder.withItemTodo(oneTodo(1, true)).build(),
+                b: builder.withItemTodo(oneTodo(1, false)).build()
+            };
+
             const todoProducer$ = testScheduler.createColdObservable(todoProducer, todoItemValues);
             const inMemoryTodoListService = new InMemoryTodoListService([]);
 
@@ -33,7 +39,7 @@ describe("Infra > TodoList Gateway", () => {
             const res$ = inMemoryTodoListService.get();
 
             // THEN
-            testScheduler.expectObservable(res$).toBe(consumer, todoItemValues);
+            testScheduler.expectObservable(res$).toBe(consumer, todoItemConsumedValues);
             testScheduler.flush();
         });
 
@@ -43,11 +49,12 @@ describe("Infra > TodoList Gateway", () => {
             const consumer     = '-a';
 
             const todoItemValues = {
-                a: { title: "My added item" } as CreateTodoItem
+                a: { title: "My item 1" } as CreateTodoItem
             };
 
+            const builder = new TodoItemEventBuilder();
             const createdItemValue = {
-                a: { id: 1, title: "My added item", checked: false} as TodoItem
+                a: builder.withItemTodo(oneTodo(1)).build()
             }
 
             const todoProducer$ = testScheduler.createColdObservable(todoProducer, todoItemValues);
@@ -68,11 +75,12 @@ describe("Infra > TodoList Gateway", () => {
             const consumer     = '-a';
 
             const todoItemValues = {
-                a: { title: "My added item" } as CreateTodoItem
+                a: { title: "My item 2" } as CreateTodoItem
             };
 
+            const builder = new TodoItemEventBuilder();
             const createdItemValue = {
-                a: { id: 2, title: "My added item", checked: false} as TodoItem
+                a: builder.withItemTodo(oneTodo(2)).build()
             }
 
             const todoProducer$ = testScheduler.createColdObservable(todoProducer, todoItemValues);

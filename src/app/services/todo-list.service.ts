@@ -1,10 +1,11 @@
 import { Observable, ReplaySubject } from "rxjs";
 import { TodoItem } from "../infra/todo-list/todo-item.model";
 import { GetTodoItemEvents, TodoListGateway } from "../infra/todo-list/todo-list.gateway";
+import { TodoItemEvent, TodoItemEventType } from "../infra/todo-list/todo-item-event.model";
 
 export class TodoListService {
 
-    private todoItems$ = new ReplaySubject<TodoItem[]>(1);
+    private todoItems$!: ReplaySubject<TodoItem[]>;
 
     private todoItems!: TodoItem[];
 
@@ -12,6 +13,15 @@ export class TodoListService {
                 private getTodoItemEvents: GetTodoItemEvents) {}
 
     public get(): Observable<TodoItem[]> {
+        if (!this.todoItems$) {
+            this.init();
+        }
+
+        return this.todoItems$.asObservable();
+    }
+
+    private init() {
+        this.todoItems$ = new ReplaySubject(1);
         this.todoListGateway
             .getAll()
             .subscribe(res => {
@@ -21,19 +31,29 @@ export class TodoListService {
 
         this.getTodoItemEvents
             .get()
-            .subscribe(event => this.upsert(event));
-
-        return this.todoItems$.asObservable();
+            .subscribe(event => {
+                this.handleEvent(event);
+                this.todoItems$.next(this.todoItems);
+            });
     }
 
-    private upsert(event: TodoItem) {
-        const index = this.todoItems.findIndex(item => item.id === event.id);
-
-        if (index > -1) {
-            this.todoItems.splice(index, 1, event);
-        } else {
-            this.todoItems.push(event);
+    private handleEvent(event: TodoItemEvent): void {
+        switch(event.type) {
+            case TodoItemEventType.CREATE:
+                this.insert(event.value);
+                break;
+            case TodoItemEventType.UPDATE:
+                this.update(event.value);
+                break;
         }
-        this.todoItems$.next(this.todoItems);
+    }
+
+    private insert(item: TodoItem): void {
+        this.todoItems.push(item);
+    }
+
+    private update(update: TodoItem): void {
+        const index = this.todoItems.findIndex(item => item.id === update.id);
+        this.todoItems.splice(index, 1, update);
     }
 }
