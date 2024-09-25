@@ -1,5 +1,6 @@
 
-mat-radio-button {
-    padding-right: 0.9em;
-    margin-right: 0.9em;
+mat-radio-group {
+    mat-radio-button:not(:first-child) {
+        margin-left: 2em;
+    }
 }

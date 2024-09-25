@@ -1,6 +1,6 @@
 <div [formGroup]="filterForm" *ngIf="options$ | async; let options">
     <mat-radio-group aria-label="Select an option" formControlName="remaining">
-        <mat-radio-button [matBadge]="options.totalItemCount" [value]="false">Toutes les tâches</mat-radio-button>
-        <mat-radio-button [matBadge]="options.remainingItemCount" [value]="true">A faire uniquement</mat-radio-button>
+        <mat-radio-button matBadgeOverlap="false" [matBadge]="options.totalItemCount" [value]="false">Toutes les tâches</mat-radio-button>
+        <mat-radio-button matBadgeOverlap="false" [matBadge]="options.remainingItemCount" [value]="true">A faire</mat-radio-button>
     </mat-radio-group>
 </div>

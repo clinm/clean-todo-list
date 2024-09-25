@@ -10,7 +10,8 @@ import { CreateTodoItemGateway } from "../../../../infra/todo-list/todo-list.gat
     selector: 'app-create-todo',
     standalone: true,
     imports: [ReactiveFormsModule, FormsModule, MatInputModule, MatButtonModule, MatIconModule],
-    templateUrl: './create-todo.component.html'
+    templateUrl: './create-todo.component.html',
+    styleUrl: './create-todo.component.scss'
   })
   export class CreateTodoComponent {
       
