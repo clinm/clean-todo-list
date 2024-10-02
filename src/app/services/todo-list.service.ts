@@ -9,8 +9,8 @@ export class TodoListService {
 
     private todoItems!: TodoItem[];
 
-    constructor(private todoListGateway: TodoListGateway,
-                private getTodoItemEvents: GetTodoItemEvents) {}
+    constructor(private readonly todoListGateway: TodoListGateway,
+                private readonly getTodoItemEvents: GetTodoItemEvents) {}
 
     public get(): Observable<TodoItem[]> {
         if (!this.todoItems$) {

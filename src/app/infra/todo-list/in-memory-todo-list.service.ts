@@ -7,11 +7,11 @@ import { CreateTodoItemGateway, GetTodoItemEvents, TodoListGateway, UpdateTodoIt
 
 export class InMemoryTodoListService implements TodoListGateway, UpdateTodoItemGateway, GetTodoItemEvents, CreateTodoItemGateway {
 
-    private updateTodoItemSubject = new Subject<TodoItemEvent>();
+    private readonly updateTodoItemSubject = new Subject<TodoItemEvent>();
 
     private lastId: number;
 
-    constructor(private todos: TodoItem[]) {
+    constructor(private readonly todos: TodoItem[]) {
         this.lastId = this.todos.map(t => t.id).pop() ?? 0;
     }
     

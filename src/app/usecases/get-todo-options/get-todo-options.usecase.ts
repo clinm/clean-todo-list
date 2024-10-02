@@ -10,8 +10,8 @@ export class GetTodoOptionsUsecase {
 
     private todoOptionVm$!: Observable<TodoOptionVm>;
 
-    public constructor(private todoOptionsGateway: TodoOptionsGateway,
-                      private todoListService: TodoListService) { }
+    public constructor(private readonly todoOptionsGateway: TodoOptionsGateway,
+                      private readonly todoListService: TodoListService) { }
 
 
     public run(): Observable<TodoOptionVm> {

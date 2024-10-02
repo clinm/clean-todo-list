@@ -19,7 +19,7 @@ import { CreateTodoItemGateway } from "../../../../infra/todo-list/todo-list.gat
         title: new FormControl("", [Validators.required, Validators.minLength(1)])
     });
 
-    constructor(private createTodoItemGateway: CreateTodoItemGateway){}
+    constructor(private readonly createTodoItemGateway: CreateTodoItemGateway){}
 
     onSubmit() {
         const raw = this.createForm.getRawValue() as CreateTodoItem;

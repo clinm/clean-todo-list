@@ -10,7 +10,7 @@ export function oneTodo(id: number, checked: boolean = false): TodoItem {
 
 export class SchedulerTodoListGateway implements TodoListGateway {
 
-    constructor(private testScheduler: TestScheduler, private values: TodoItem[]) { }
+    constructor(private readonly testScheduler: TestScheduler, private readonly values: TodoItem[]) { }
 
     getAll(): Observable<TodoItem[]> {
         return this.testScheduler.createColdObservable('a', { a: this.values});
@@ -19,7 +19,7 @@ export class SchedulerTodoListGateway implements TodoListGateway {
 
 export class SchedulerGetTodoItemEvents implements GetTodoItemEvents {
 
-    constructor(private testScheduler: TestScheduler, private events: string, private values?: any) { }
+    constructor(private readonly testScheduler: TestScheduler, private readonly events: string, private readonly values?: any) { }
 
     get(): Observable<TodoItemEvent> {
         return this.testScheduler.createColdObservable(this.events, this.values);

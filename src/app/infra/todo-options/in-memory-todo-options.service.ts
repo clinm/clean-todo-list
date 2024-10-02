@@ -4,9 +4,9 @@ import { TodoOptions } from "./todo-options.model";
 
 export class InMemoryTodoOptionsService implements TodoOptionsGateway, UpdateTodoOptionsGateway {
 
-    private optionsSubject: BehaviorSubject<TodoOptions>;
+    private readonly optionsSubject: BehaviorSubject<TodoOptions>;
 
-    constructor(private options: TodoOptions) {
+    constructor(private readonly options: TodoOptions) {
         this.optionsSubject = new BehaviorSubject(this.options);
     }
     

@@ -16,7 +16,7 @@ export class DisplayListTodoComponent {
   @Input()
   items!: ItemVM[];
 
-  constructor(private updateGateway: UpdateTodoItemGateway) {}
+  constructor(private readonly updateGateway: UpdateTodoItemGateway) {}
 
   update(item: ItemVM, event: MatCheckboxChange): void {
     const itemEvent: ItemVM = { ...item, checked: event.checked };

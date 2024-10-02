@@ -22,7 +22,7 @@ export class HomeComponent implements OnInit {
 
   TodoListViewModelType = TodoListViewModelType;
   
-  constructor(private getTodoList: GetTodoListUsecase) {}
+  constructor(private readonly getTodoList: GetTodoListUsecase) {}
 
   ngOnInit(): void {
     this.todos$ = this.getTodoList.run();

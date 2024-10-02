@@ -23,8 +23,8 @@ export class FilterOptionsComponent implements OnInit {
       remaining: new FormControl()
     });
     
-    constructor(private getTodoOptions: GetTodoOptionsUsecase,
-                private updateTodoOptionsGateway: UpdateTodoOptionsGateway) {}
+    constructor(private readonly getTodoOptions: GetTodoOptionsUsecase,
+                private readonly updateTodoOptionsGateway: UpdateTodoOptionsGateway) {}
   
     ngOnInit(): void {
       this.options$ = this.getTodoOptions.run();

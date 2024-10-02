@@ -1,10 +1,11 @@
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { ComponentFixture, TestBed, fakeAsync, tick } from "@angular/core/testing";
-import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
-import { MatRadioButtonHarness } from '@angular/material/radio/testing';
-import { MatInputHarness } from '@angular/material/input/testing';
 import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
+import { MatInputHarness } from '@angular/material/input/testing';
+import { MatRadioButtonHarness } from '@angular/material/radio/testing';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { infraRootProvider } from '../../infra/infra.provider';
 import { InMemoryTodoListService } from "../../infra/todo-list/in-memory-todo-list.service";
 import { oneTodo } from "../../infra/todo-list/todo-list.fixture";
@@ -13,8 +14,6 @@ import { REMAINING_ITEM_OPTIONS } from '../../infra/todo-options/todo-options.fi
 import { servicesProvider } from '../../services/services.provider';
 import { usecasesProviders } from '../../usecases/usecases.provider';
 import { HomeComponent } from "./home.component";
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { By } from '@angular/platform-browser';
 
 describe("Home", () => {
 

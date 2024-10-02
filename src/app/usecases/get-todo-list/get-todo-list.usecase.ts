@@ -1,15 +1,15 @@
-import { Observable, catchError, combineLatestWith, map, of, startWith } from "rxjs";
+import { Observable, combineLatestWith, map } from "rxjs";
 import { TodoItem } from "../../infra/todo-list/todo-item.model";
-import { TodoListBuilder } from "./todo-list.builder";
-import { ItemVM, TodoListVM, TodoListViewModelType } from "./todo-list.vm";
 import { TodoOptionsGateway } from "../../infra/todo-options/todo-options.gateway";
 import { TodoOptions } from "../../infra/todo-options/todo-options.model";
 import { TodoListService } from "../../services/todo-list.service";
+import { TodoListBuilder } from "./todo-list.builder";
+import { ItemVM, TodoListVM, TodoListViewModelType } from "./todo-list.vm";
 
 export class GetTodoListUsecase {
 
-    constructor(private todoListService: TodoListService,
-                private todoOptionsGateway: TodoOptionsGateway){ }
+    constructor(private readonly todoListService: TodoListService,
+                private readonly todoOptionsGateway: TodoOptionsGateway){ }
 
     public run(): Observable<TodoListVM> {
         return this.todoListService.get()
