@@ -28,8 +28,6 @@ export class TodoListBuilder {
 
         switch(this.type) {
             case TodoListViewModelType.NoTodo:
-            case TodoListViewModelType.Loading:
-            case TodoListViewModelType.Error: 
                 res = { type: this.type, message: this.message}
                 break;
             case TodoListViewModelType.Todos:

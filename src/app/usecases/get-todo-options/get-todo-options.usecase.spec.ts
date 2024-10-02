@@ -94,6 +94,6 @@ describe("Feature: Options", () => {
             a: new TodoOptionsBuilder().withRemaining(true).withCounters(1, 3).build()
         };
 
-        testScheduler.expectObservable(res$).toBe('-a', expectedValue);
+        testScheduler.expectObservable(res$).toBe('a', expectedValue);
     }
 });

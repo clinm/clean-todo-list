@@ -13,15 +13,7 @@ export class SchedulerTodoListGateway implements TodoListGateway {
     constructor(private testScheduler: TestScheduler, private values: TodoItem[]) { }
 
     getAll(): Observable<TodoItem[]> {
-        return this.testScheduler.createColdObservable('-a', { a: this.values});
-    }
-}
-
-export class SchedulerErrorTodoListGateway implements TodoListGateway {
-    constructor(private testScheduler: TestScheduler, private value: any) { }
-
-    getAll(): Observable<TodoItem[]> {
-        return this.testScheduler.createColdObservable('--#', undefined, this.value);
+        return this.testScheduler.createColdObservable('a', { a: this.values});
     }
 }
 

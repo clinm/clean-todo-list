@@ -1,4 +1,4 @@
-import { Observable, Subject, delay, of } from "rxjs";
+import { Observable, Subject, of } from "rxjs";
 import { CreateTodoItem } from "./create-todo-item.model";
 import { TodoItemEventBuilder } from "./todo-item-event.builder";
 import { TodoItemEvent } from "./todo-item-event.model";
@@ -11,12 +11,12 @@ export class InMemoryTodoListService implements TodoListGateway, UpdateTodoItemG
 
     private lastId: number;
 
-    constructor(private todos: TodoItem[], private delay: number = 0) {
+    constructor(private todos: TodoItem[]) {
         this.lastId = this.todos.map(t => t.id).pop() ?? 0;
     }
     
     getAll(): Observable<TodoItem[]> {
-        return of(this.todos).pipe(delay(this.delay));
+        return of(this.todos);
     }
     
     get(): Observable<TodoItemEvent> {

@@ -15,9 +15,7 @@ export class GetTodoListUsecase {
         return this.todoListService.get()
                     .pipe(
                         combineLatestWith(this.todoOptionsGateway.get()),
-                        map(([todos, options]) => this.mapToVM(todos, options)),
-                        startWith(this.buildLoading()),
-                        catchError(() => of(this.buildError()))
+                        map(([todos, options]) => this.mapToVM(todos, options))
                     );
     }
 
@@ -28,14 +26,6 @@ export class GetTodoListUsecase {
         } else {
             return this.buildWithTasks(filteredTodos);
         }
-    }
-
-    private buildError(): TodoListVM {
-        return new TodoListBuilder().withType(TodoListViewModelType.Error).withMessage("Une erreur est survenue").build();
-    }
-
-    private buildLoading(): TodoListVM {
-        return new TodoListBuilder().withType(TodoListViewModelType.Loading).withMessage("Chargement en cours ...").build();
     }
 
     private buildNoTask(): TodoListVM {

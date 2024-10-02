@@ -11,7 +11,7 @@ export function infraProviders() {
         { id: 1, title: "Ma tâche", checked: false }, 
         { id: 2, title: "Ma tâche complétée", checked: true}
     ];
-    const todoListService = new InMemoryTodoListService(items, 100);
+    const todoListService = new InMemoryTodoListService(items);
 
     return infraRootProvider(todoListService, todoOptionsService);
 }

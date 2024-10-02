@@ -12,13 +12,7 @@
             @case (TodoListViewModelType.NoTodo) {
               {{ todos.message }}
               <app-create-todo></app-create-todo>
-            }
-            @case (TodoListViewModelType.Loading) {
-              {{ todos.message }}
-            }
-            @case (TodoListViewModelType.Error) {
-              {{ todos.message }}
-            }                    
+            }                  
             @case (TodoListViewModelType.Todos) {
               <app-display-list-todo [items]="todos.items"></app-display-list-todo>
               <app-create-todo></app-create-todo>

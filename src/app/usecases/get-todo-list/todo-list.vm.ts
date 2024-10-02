@@ -1,8 +1,6 @@
 export enum TodoListViewModelType {
     NoTodo = "NO_TODO",
-    Todos = "TODOS",
-    Loading= "LOADING",
-    Error = "ERROR"
+    Todos = "TODOS"
   }
 
 export type ItemVM = {
@@ -12,7 +10,7 @@ export type ItemVM = {
 };
 
 export type TodoListVM = {
-    type: TodoListViewModelType.NoTodo | TodoListViewModelType.Loading | TodoListViewModelType.Error,
+    type: TodoListViewModelType.NoTodo,
     message: string
 } | {
   type: TodoListViewModelType.Todos,

@@ -12,7 +12,7 @@ export class SchedulerTodoOptionsGateway implements TodoOptionsGateway {
     constructor(private testScheduler: TestScheduler, private value: TodoOptions) { }
 
     get(): Observable<TodoOptions> {
-        return this.testScheduler.createColdObservable('-a', { a: this.value });
+        return this.testScheduler.createColdObservable('a', { a: this.value });
     }
 }
 

@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
 import { TodoItemEventBuilder } from '../../infra/todo-list/todo-item-event.builder';
 import { TodoItem } from "../../infra/todo-list/todo-item.model";
-import { SchedulerErrorTodoListGateway, SchedulerGetTodoItemEvents, SchedulerTodoListGateway, oneTodo } from '../../infra/todo-list/todo-list.fixture';
+import { SchedulerGetTodoItemEvents, SchedulerTodoListGateway, oneTodo } from '../../infra/todo-list/todo-list.fixture';
 import { GetTodoItemEvents, TodoListGateway } from '../../infra/todo-list/todo-list.gateway';
 import { ALL_ITEM_OPTIONS, REMAINING_ITEM_OPTIONS, SchedulerTodoOptionsGateway } from '../../infra/todo-options/todo-options.fixture';
 import { TodoOptionsGateway } from '../../infra/todo-options/todo-options.gateway';
@@ -87,23 +87,10 @@ describe("Feature : Display todo list", () => {
         thenExpectValue(res$, expectTodoWithThreeItems());
     });
 
-    xit("Example : Error while loading todos", () => {
-        // GIVEN
-        const todoListGateway = givenTodoListError("Unknown error");
-        const todoOptionGateway = givenOptions(REMAINING_ITEM_OPTIONS);
-        const getTodoListUsecase = createUsecase(todoListGateway, todoOptionGateway);
-
-        // WHEN
-        const res$ = getTodoListUsecase.run();
-
-        // THEN
-        thenExpectValue(res$, expectError());
-    });
-
     it("Example : event on todo update item action", () => {
         // GIVEN
         const updateEvents    = '-----a-b-';
-        const expectedMarbles = 'ab---c-d-';
+        const expectedMarbles = 'a----b-c-';
 
         const builder = new TodoItemEventBuilder().isUpdate();
         const updateValues = {
@@ -111,10 +98,9 @@ describe("Feature : Display todo list", () => {
             b: builder.withItemTodo(oneTodo(2, true)).build()
         }
         const expectedValues = {
-            a: expectLoading(),
-            b: expectTodoWithTwoItems(false, false),
-            c: expectTodoWithTwoItems(true, false),
-            d: expectTodoWithTwoItems(true, true)
+            a: expectTodoWithTwoItems(false, false),
+            b: expectTodoWithTwoItems(true, false),
+            c: expectTodoWithTwoItems(true, true)
         };
 
         const todoListGateway = givenTodoListGateway([oneTodo(1), oneTodo(2)]);
@@ -135,15 +121,14 @@ describe("Feature : Display todo list", () => {
     it("Example : event on todo create item action", () => {
         // GIVEN
         const updateEvents    = '-----a-';
-        const expectedMarbles = 'ab---c-';
+        const expectedMarbles = 'a----b-';
         const builder = new TodoItemEventBuilder();
         const updateValues = {
             a: builder.withItemTodo(oneTodo(3)).build()
         }
         const expectedValues = {
-            a: expectLoading(),
-            b: expectTodoWithTwoItems(true, true),
-            c: expectTodoWithTwoItemsAndACreatedOne()
+            a: expectTodoWithTwoItems(true, true),
+            b: expectTodoWithTwoItemsAndACreatedOne()
         };
 
         const todoListGateway = givenTodoListGateway([oneTodo(1, true), oneTodo(2, true)]);
@@ -161,18 +146,13 @@ describe("Feature : Display todo list", () => {
     });
 
     function thenExpectValue(res$: Observable<TodoListVM>, value: TodoListVM) {
-        const expectedMarbles = 'ab--';
+        const expectedMarbles = 'a--';
         const expectedValues = {
-            a: expectLoading(),
-            b: value,
+            a: value
         };
 
         testScheduler.expectObservable(res$).toBe(expectedMarbles, expectedValues);
         testScheduler.flush();
-    }
-
-    function expectLoading(): TodoListVM {
-        return { type: TodoListViewModelType.Loading, message: "Chargement en cours ..." };
     }
 
     function expectNoTodo(): TodoListVM {
@@ -202,10 +182,6 @@ describe("Feature : Display todo list", () => {
         return { type: TodoListViewModelType.Todos, items: items };
     }
 
-    function expectError(): TodoListVM {
-        return { type: TodoListViewModelType.Error, message: "Une erreur est survenue" };
-    }
-    
     function createUsecase(todoListGateway: TodoListGateway,
                             todoOptionGateway: TodoOptionsGateway,
                             getTodoItemEvents: GetTodoItemEvents = givenTodoItemEvents('-')) {
@@ -215,10 +191,6 @@ describe("Feature : Display todo list", () => {
 
     function givenTodoListGateway(items: TodoItem[]) {
         return new SchedulerTodoListGateway(testScheduler, items);
-    }
-
-    function givenTodoListError(error: any) {
-        return new SchedulerErrorTodoListGateway(testScheduler, error);
     }
 
     function givenTodoItemEvents(events: string, value?: any) {
