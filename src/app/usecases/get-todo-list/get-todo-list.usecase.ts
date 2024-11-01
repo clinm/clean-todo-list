@@ -29,7 +29,7 @@ export class GetTodoListUsecase {
     }
 
     private buildNoTask(): TodoListVM {
-        return new TodoListBuilder().withType(TodoListViewModelType.NoTodo).withMessage("Aucune tâche à effectuer").build();
+        return new TodoListBuilder().withType(TodoListViewModelType.NoTodo).build();
     }
 
     private filterTodos(todos: TodoItem[], options: TodoOptions): TodoItem[] {

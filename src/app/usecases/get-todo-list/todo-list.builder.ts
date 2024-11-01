@@ -4,17 +4,10 @@ export class TodoListBuilder {
 
     protected type!: TodoListViewModelType; 
 
-    protected message!: string;
-
     protected items!: ItemVM[];
 
     public withType(type: TodoListViewModelType): this {
         this.type = type;
-        return this;
-    }
-
-    public withMessage(message: string): this {
-        this.message = message;
         return this;
     }
 
@@ -28,7 +21,7 @@ export class TodoListBuilder {
 
         switch(this.type) {
             case TodoListViewModelType.NoTodo:
-                res = { type: this.type, message: this.message}
+                res = { type: this.type }
                 break;
             case TodoListViewModelType.Todos:
                 res = { type: TodoListViewModelType.Todos, items: this.items};

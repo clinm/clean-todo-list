@@ -10,8 +10,7 @@ export type ItemVM = {
 };
 
 export type TodoListVM = {
-    type: TodoListViewModelType.NoTodo,
-    message: string
+    type: TodoListViewModelType.NoTodo
 } | {
   type: TodoListViewModelType.Todos,
   items: ItemVM[]

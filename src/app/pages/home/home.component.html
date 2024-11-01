@@ -10,7 +10,10 @@
         <div>
           @switch (todos.type) {
             @case (TodoListViewModelType.NoTodo) {
-              {{ todos.message }}
+              <div id="message-no-task-display">
+                <h1>Aucune tâche à effectuer</h1>
+                <p>Profitez de votre journée ou créez une tâche</p>
+              </div>
               <app-create-todo></app-create-todo>
             }                  
             @case (TodoListViewModelType.Todos) {

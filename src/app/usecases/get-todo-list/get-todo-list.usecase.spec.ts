@@ -156,7 +156,7 @@ describe("Feature : Display todo list", () => {
     }
 
     function expectNoTodo(): TodoListVM {
-        return { type: TodoListViewModelType.NoTodo, message: "Aucune tâche à effectuer" };
+        return { type: TodoListViewModelType.NoTodo };
     }
 
     function expectTodoWithTwoItems(checked1: boolean = false, checked2: boolean = false): TodoListVM {

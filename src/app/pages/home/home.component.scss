@@ -3,6 +3,11 @@
     padding: 1em;
     margin: 0 auto;
 
+    #message-no-task-display {
+        padding: 4em 0;
+        text-align: center;
+    }
+
     .mat-mdc-card-content:last-child {
         padding-bottom: unset;
     }
