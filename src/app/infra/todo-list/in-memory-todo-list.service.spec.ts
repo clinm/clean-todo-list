@@ -7,7 +7,7 @@ import { Observable } from "rxjs";
 import { TodoItemEvent } from "./todo-item-event.model";
 import { TodoItem } from "./todo-item.model";
 
-describe("Infra > TodoList Gateway", () => {
+describe("Infra > InMemory TodoList Gateway", () => {
 
     let testScheduler: TestScheduler;
     
